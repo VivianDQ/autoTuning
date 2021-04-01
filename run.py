@@ -72,7 +72,7 @@ reg_auto = np.zeros(T)
 reg_op = np.zeros(T)
 
 min_rate = 0
-max_rate = int(0.01*math.sqrt( d*math.log((T/lamda+1)/delta) ) + math.sqrt(lamda)) + 1 + explore_interval_length
+max_rate = 0.01*math.sqrt( d*math.log((T/lamda+1)/delta) ) + math.sqrt(lamda) + explore_interval_length
 if args.max_rate != -1:
     max_rate = args.max_rate
 J = np.arange(min_rate, max_rate, explore_interval_length)
