@@ -118,8 +118,8 @@ for i in range(rep):
     
     reg_auto += fcts['auto'](J, lamda)
     
-    print("theory {}, auto {}, op {}, auto_adv {}, grid {}".format(
-        reg_theory[-1], reg_auto[-1], reg_op[-1], reg_auto_adv[-1], min(grid[:,-1]) ))
+    print("theory {}, auto {}, op {}".format(
+        reg_theory[-1], reg_auto[-1], reg_op[-1]))
     
     result = {
         'theory': reg_theory/(i+1),
