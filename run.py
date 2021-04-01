@@ -36,7 +36,15 @@ model = args.model
 K = args.k
 lamda = args.lamda
 delta = args.delta
-data = args.data
+datatype = args.data
+
+if not os.path.exists('results/'):
+    os.mkdir('results/')
+if not os.path.exists('results/' + datatype + '/'):
+    os.mkdir('results/' + datatype + '/')
+if not os.path.exists('results/' + datatype + '/' + algo + '/'):
+    os.mkdir('results/' + datatype + '/' + algo + '/')
+path = 'results/' + datatype + '/' + algo + '/'
 
 if datatype == 'movielens' or datatype == 'netflix':
     # check real data files exist:
@@ -113,20 +121,10 @@ for i in range(rep):
     print("theory {}, auto {}, op {}, auto_adv {}, grid {}".format(
         reg_theory[-1], reg_auto[-1], reg_op[-1], reg_auto_adv[-1], min(grid[:,-1]) ))
     
-result = {
-    'theory': reg_theory/rep,
-    'auto': reg_auto/rep,
-    'op': reg_op/rep,
-}
-
-
-name = 'simulation_d' + str(d) + '_k' + str(K)
-if not os.path.exists('results/'):
-    os.mkdir('results/')
-if not os.path.exists('results/' + name + '/'):
-    os.mkdir('results/' + name + '/')
-if not os.path.exists('results/' + name + '/' + algo):
-    os.mkdir('results/' + name + '/' + algo)
-    
-for k,v in result.items():
-    np.savetxt('results/' + name + '/' + algo + '/' + k, v)
+    result = {
+        'theory': reg_theory/(i+1),
+        'auto': reg_auto/(i+1),
+        'op': reg_op/(i+1),
+    }
+    for k,v in result.items():
+        np.savetxt(path + k, v)   
