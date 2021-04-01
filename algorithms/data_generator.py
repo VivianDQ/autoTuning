@@ -134,5 +134,5 @@ class movie:
             self.reward[t] = (self.reward[t] - minr) / (maxr - minr)
             self.optimal[t] = max(self.reward[t])
 
-    def random_reward(self, t, i):
+    def random_sample(self, t, i):
         return np.random.normal(self.reward[t][i], 0.01)
