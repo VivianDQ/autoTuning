@@ -10,7 +10,7 @@ def mf(input_path, output_path, d, dataname):
     r.source("data/mf.R")
     r.mf(input_path, output_path, d, dataname)
 
-def process_netflix_data():
+def process_netflix_data(d):
     lines = []
     movie_count_rate = {}
     count = 0
@@ -34,7 +34,7 @@ def process_netflix_data():
 
     inpath = 'data/raw_data/netflix_ratings.txt'
     outpath = 'data/'
-    dim = '10'
+    dim = str(d)
     mf(inpath, outpath, dim, 'netflix_')
 
     users = np.loadtxt("data/netflix_users_matrix_d{}".format(dim))
@@ -51,7 +51,7 @@ def process_netflix_data():
     np.savetxt("data/netflix_movies_matrix_d{}".format(dim), movies)
     print('mf processing done, data saved')
     
-def process_movielens_data():
+def process_movielens_data(d):
     lines = []
     with open('data/raw_data/u.data', 'r') as f: # u.data is from the movielens100K data
         for line in f:
@@ -66,6 +66,6 @@ def process_movielens_data():
 
     inpath = 'data/raw_data/movielens100k_ratings.txt'
     outpath = 'data/'
-    dim = '10'
+    dim = str(d)
     mf(inpath, outpath, dim, 'movielens_')
     print('mf processing done, data saved')

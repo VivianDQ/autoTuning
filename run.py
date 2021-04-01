@@ -48,14 +48,13 @@ path = 'results/' + datatype + '/' + algo + '/'
 
 if datatype == 'movielens' or datatype == 'netflix':
     # check real data files exist:
-    '''
     if not os.path.isfile('data/{}_users_matrix_d{}'.format(datatype, d)) or not os.path.isfile('data/{}_movies_matrix_d{}'.format(datatype, d)):
         print("{holder} data does not exist, will run preprocessing for {holder} data now. If you are running experiments for netflix data, then preprocessing might take a long time".format(holder=datatype))
         from data.preprocess_data import *
         process = eval("process_{}_data".format(datatype))
-        process()
+        process(d)
         print("real data processing done")   
-    '''  
+    
     users = np.loadtxt("data/{}_users_matrix_d{}".format(datatype, d))
     fv = np.loadtxt("data/{}_movies_matrix_d{}".format(datatype, d))
     np.random.seed(0)
