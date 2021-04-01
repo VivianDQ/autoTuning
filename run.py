@@ -97,6 +97,8 @@ for i in range(rep):
             context = data_generator.movie
         bandit = context(K, T, d, true_theta = theta, fv=fv)
     elif 'glm' in algo:
+        theta = np.random.uniform(lb, ub, d)
+        fv = np.random.uniform(lb, ub, (T, K, d))
         context_logistic = data_generator.context_logistic
         bandit = context_logistic(K, lb, ub, T, d, true_theta = theta, fv=fv)
     bandit.build_bandit()
