@@ -1,16 +1,15 @@
 import numpy as np
 import random
 import math
+from AutoTuning import *
 
-class LinUCB_reward:
-    def __init__(self, attack_type, class_context, T):
+class LinUCB:
+    def __init__(self, class_context, T):
         self.data = class_context
         self.T = T
         self.d = self.data.d
-        self.attack = getattr(self.data, attack_type) 
-        self.budget = self.data.attack_budget
-        
-    def linucb(self, delta=0.1, lamda=0.1):
+
+    def linucb_theoretical_explore(self, lamda=1, delta=0.1):
         T = self.T
         d = self.data.d
         regret = np.zeros(T)
@@ -22,36 +21,23 @@ class LinUCB_reward:
         for t in range(T):
             feature = self.data.fv[t]
             K = len(feature)
-
-            explore = 0.01*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
             ucb_idx = [0]*K
+            
+            explore = 0.01*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
             for arm in range(K):
                 ucb_idx[arm] = feature[arm].dot(theta_hat) + explore * math.sqrt( feature[arm].T.dot(B_inv).dot(feature[arm]) )
             pull = np.argmax(ucb_idx)
-            
-            if self.budget < 0:
-                observe_r = self.data.random_reward(t,pull)
-            else:
-                observe_r, cost = self.attack(t, pull)
-                self.budget -= cost
-                
+            observe_r = self.data.random_sample(t,pull)
+            tmp = B_inv.dot(feature[pull])
             B += np.outer(feature[pull], feature[pull])
-            B_inv = np.linalg.inv(B)
+            B_inv -= np.outer(tmp, tmp)/ (1+feature[pull].dot(tmp))
             xr += feature[pull] * observe_r
             theta_hat = B_inv.dot(xr)
             
             regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
         return regret
-
-class LinUCB_context:
-    def __init__(self, attack_type, class_context, T):
-        self.data = class_context
-        self.T = T
-        self.d = self.data.d
-        self.attack = getattr(self.data, attack_type) 
-        self.budget = self.data.attack_budget
-        
-    def linucb(self, delta=0.1, lamda=0.1):
+    
+    def linucb_auto(self, explore_rates, lamda=1):
         T = self.T
         d = self.data.d
         regret = np.zeros(T)
@@ -60,28 +46,79 @@ class LinUCB_context:
         B_inv = np.identity(d) / lamda
         theta_hat = np.zeros(d)
         
+        # initialization for exp3 algo
+        # the possible choices for C is in J
+        # the following two lines are an ideal set of "explore_rates"
+        # min_rate, max_rate = 0, 2 * (int(math.sqrt(d * math.log(T**2+T) ) + math.sqrt(lamda)) + 1)
+        # J = np.arange(min_rate, max_rate, explore_interval_length)
+        Kexp = len(explore_rates)
+        logw = np.zeros(Kexp)
+        p = np.ones(Kexp) / Kexp
+        gamma = min(1, math.sqrt( Kexp*math.log(Kexp) / ( (np.exp(1)-1) * T ) ) )
+        # random initial explore rate
+        index = np.random.choice(Kexp)
+        explore = explore_rates[index]
+        
         for t in range(T):
             feature = self.data.fv[t]
             K = len(feature)
-            explore = 0.01*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
             ucb_idx = [0]*K
+            
             for arm in range(K):
                 ucb_idx[arm] = feature[arm].dot(theta_hat) + explore * math.sqrt( feature[arm].T.dot(B_inv).dot(feature[arm]) )
             pull = np.argmax(ucb_idx)
+            observe_r = self.data.random_sample(t,pull)
             
-            if self.budget > 0:
-                feature, cost = self.attack(t, pull)
-                self.budget -= cost
-                ucb_idx = [0]*K
-                for arm in range(K):
-                    ucb_idx[arm] = feature[arm].dot(theta_hat) + explore * math.sqrt( feature[arm].T.dot(B_inv).dot(feature[arm]) )
-                pull = np.argmax(ucb_idx)
-                
-            observe_r = self.data.random_reward(t,pull)
-            B += np.outer(feature[pull], feature[pull])
-            B_inv = np.linalg.inv(B)
+            # update linucb
+            tmp = B_inv.dot(feature[pull])
+            B_inv -= np.outer(tmp, tmp)/ (1+feature[pull].dot(tmp))
             xr += feature[pull] * observe_r
             theta_hat = B_inv.dot(xr)
-            
             regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
+            
+            # update explore rates by auto_tuning
+            logw, p, index = auto_tuning(logw, p, observe_r, index, gamma)
+            explore = explore_rates[index]
+        return regret
+    
+    def linucb_op(self, explore_rates, lamda=1):
+        T = self.T
+        d = self.data.d
+        regret = np.zeros(T)
+        xr = np.zeros(d)
+        B = np.identity(d) * lamda
+        B_inv = np.identity(d) / lamda
+        theta_hat = np.zeros(d)
+        
+        # initialization for exp3 algo
+        # the possible choices for C is in J
+        # the following two lines are an ideal set of "explore_rates"
+        # min_rate, max_rate = 0, 2 * (int(math.sqrt(d * math.log(T**2+T) ) + math.sqrt(lamda)) + 1)
+        # J = np.arange(min_rate, max_rate, explore_interval_length)
+        Kexp = len(explore_rates)
+        s = np.ones(Kexp)
+        f = np.ones(Kexp)
+        index = np.random.choice(Kexp)
+        explore = explore_rates[index]
+        
+        for t in range(T):
+            feature = self.data.fv[t]
+            K = len(feature)
+            ucb_idx = [0]*K
+            
+            for arm in range(K):
+                ucb_idx[arm] = feature[arm].dot(theta_hat) + explore * math.sqrt( feature[arm].T.dot(B_inv).dot(feature[arm]) )
+            pull = np.argmax(ucb_idx)
+            observe_r = self.data.random_sample(t,pull)
+            
+            # update linucb
+            tmp = B_inv.dot(feature[pull])
+            B_inv -= np.outer(tmp, tmp)/ (1+feature[pull].dot(tmp))
+            xr += feature[pull] * observe_r
+            theta_hat = B_inv.dot(xr)
+            regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
+            
+            # update explore rates by auto_tuning
+            s, f, index = op_tuning(s, f, observe_r, index)
+            explore = explore_rates[index]
         return regret

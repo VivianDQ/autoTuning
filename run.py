@@ -3,13 +3,14 @@ import random
 import math
 import os
 import argparse
+import importlib
 
-from data_generator import *
-from LinUCB import *
-from LinTS import *
-from UCB_GLM import *
-from AutoTuning import *
-
+# from algorithms.data_generator import *
+from algorithms.LinUCB import *
+from algorithms.LinTS import *
+from algorithms.UCB_GLM import *
+from algorithms.AutoTuning import *
+data_generator = importlib.import_module('algorithms.data_generator')
 
 parser = argparse.ArgumentParser(description='simulations')
 parser.add_argument('-split', '--split', type=float, default = 0.5, help = 'split size of candidate exploration rates')
@@ -18,70 +19,76 @@ parser.add_argument('-algo', '--algo', type=str, default = 'linucb', help = 'can
 parser.add_argument('-model', '--model', type=str, default = 'linear', help = 'linear or logistic')
 parser.add_argument('-k', '--k', type=int, default = 100, help = 'number of arms')
 parser.add_argument('-max_rate', '--max_rate', type=float, default = 5, help = 'max explore rate')
+parser.add_argument('-t', '--t', type=int, default = 10000, help = 'total time')
+parser.add_argument('-d', '--d', type=int, default = -1, help = 'dimension')
+parser.add_argument('-data', '--data', type=str, default = 'simulations', help = 'can be netflix or movielens')
+parser.add_argument('-lamda', '--lamda', type=float, default = 1, help = 'lambda, regularization parameter')
+parser.add_argument('-delta', '--delta', type=float, default = 0.1, help = 'error probability')
 args = parser.parse_args()
 
 
 explore_interval_length = args.split
-T = 10**4
-d = 5
+T = args.t
+d = args.d
 rep = args.rep
 algo = args.algo
 model = args.model
 K = args.k
+lamda = args.lamda
+delta = args.delta
+data = args.data
+
+if datatype == 'movielens' or datatype == 'netflix':
+    # check real data files exist:
+    if not os.path.isfile('data/{}_users_matrix_d{}'.format(datatype, d)) or not os.path.isfile('data/{}_movies_matrix_d{}'.format(datatype, d)):
+        print("{holder} data does not exist, will run preprocessing for {holder} data now. If you are running experiments for netflix data, then preprocessing might take a long time".format(holder=datatype))
+        from data.preprocess_data import *
+        process = eval("process_{}_data".format(datatype))
+        process()
+        print("real data processing done")   
+        
+    users = np.loadtxt("data/{}_users_matrix_d{}".format(datatype, d))
+    fv = np.loadtxt("data/{}_movies_matrix_d{}".format(datatype, d))
+    np.random.seed(0)
+    thetas = np.zeros((rep, d))
+    print(users.shape, fv.shape)
+    for i in range(rep):
+        thetas[i,:] = np.mean(users[np.random.choice(len(users), 100, replace = False), :], axis=0)
+
 ub = 1/math.sqrt(d)
 lb = -1/math.sqrt(d)
-
 
 reg_grid = np.zeros(T)
 reg_theory = np.zeros(T)
 reg_auto = np.zeros(T)
-reg_auto_adv = np.zeros(T)
-reg_fixed = np.zeros(T)
 reg_op = np.zeros(T)
 
-lamda = 1
 min_rate = 0
-# max_rate = 2 * int(math.sqrt( 0.5*math.log(2*T**2*K) )) 
-if algo == 'linucb':
-    max_rate = int(0.5 * math.sqrt(d * math.log(T**2+T) ) + math.sqrt(lamda)) + 1
-    explore = 0.5 * math.sqrt(d * math.log(T**2+T)) + math.sqrt(lamda)  # math.sqrt( 0.5*math.log(2*T**2*K) )
-elif algo == 'lints':
-    max_rate = int(0.5 * math.sqrt(d * math.log(T**2+T) ) + math.sqrt(lamda)) + 1 
-    explore = 0.5 * math.sqrt(d * math.log(T**2+T)) + math.sqrt(lamda) # 0.5 * math.sqrt( 9*d * math.log(T**2) )
-elif algo == 'glmucb':
-    # max_rate = int(0.5 * math.sqrt(d/2*math.log( 1+2*T/d ) + math.log(T)) ) + 1
-    # explore = 0.5 * math.sqrt(d/2*math.log( 1+2*T/d ) + math.log(T)) # 0.5 * math.sqrt(d/2*math.log( 1+2*T/d ) + math.log(T))
-    max_rate = int(0.5 * math.sqrt(d * math.log(T**2+T) ) + math.sqrt(lamda)) + 1 
-    explore = 0.5 * math.sqrt(d * math.log(T**2+T)) + math.sqrt(lamda)
-
-if args.max_rate != 5:
+max_rate = 0.01*math.sqrt( d*math.log((T/lamda+1)/delta) ) + math.sqrt(lamda)
+if args.max_rate != -1:
     max_rate = args.max_rate
 J = np.arange(min_rate, max_rate, explore_interval_length)
 print("candidate set {}".format(J))
 
 grid = np.zeros((len(J),T))
-
 methods = {
-    'fixed': '_fixed_explore',
     'theory': '_theoretical_explore',
     'auto': '_auto',
-    'auto_adv': '_auto_advanced',
     'op': '_op',
-    'grid': '_fixed_explore',
 }
 for i in range(rep):
     print(i, ": ", end = " ")
     np.random.seed(i+1)
-    # theta = np.random.uniform(lb, ub, d)
-    # fv = np.random.uniform(lb, ub, (T, K, d))
-    
     if 'lin' in algo:
-        theta = np.random.uniform(lb, ub, d)
-        fv = np.random.uniform(lb, ub, (T, K, d))
-        bandit = context(K, lb, ub, T, d, true_theta = theta, fv=fv)
+        if datatype == 'simulations':
+            theta = np.random.uniform(lb, ub, d)
+            fv = np.random.uniform(lb, ub, (T, K, d))
+            context = data_generator.context
+        elif datatype in ['movielens', 'netflix']:
+            theta = thetas[i, :]
+            context = data_generator.movie
+        bandit = context(K, T, d, true_theta = theta, fv=fv)
     elif 'glm' in algo:
-        theta = np.random.uniform(lb, ub, d)
-        fv = np.random.uniform(lb, ub, (T, K, d))
         bandit = context_logistic(K, lb, ub, T, d, true_theta = theta, fv=fv)
     bandit.build_bandit()
     
@@ -96,33 +103,20 @@ for i in range(rep):
         k: getattr(algo_class, algo+methods[k]) 
         for k,v in methods.items()
     }
-    reg_fixed += fcts['fixed'](explore)
-
-    reg_theory += fcts['theory'](explore)
-
-    reg_op += fcts['op'](J)
     
-    reg_auto += fcts['auto'](J)
+    reg_theory += fcts['theory'](lamda, delta)
+
+    reg_op += fcts['op'](J, lamda)
     
-    # reg_auto_adv += fcts['auto_adv'](J)
-
-
-    for j in range(len(J)):
-        grid[j,:] += fcts['fixed'](j)
-
-    print("fixed {}, theory {}, auto {}, op {}, auto_adv {}, grid {}".format(
-        reg_fixed[-1], reg_theory[-1], reg_auto[-1], reg_op[-1], reg_auto_adv[-1], min(grid[:,-1]) ))
+    reg_auto += fcts['auto'](J, lamda)
     
-indexJ = np.argmin(grid[:,-1])
-reg_grid = grid[indexJ,:]
+    print("theory {}, auto {}, op {}, auto_adv {}, grid {}".format(
+        reg_theory[-1], reg_auto[-1], reg_op[-1], reg_auto_adv[-1], min(grid[:,-1]) ))
+    
 result = {
-    'fixed': reg_fixed/rep,
     'theory': reg_theory/rep,
     'auto': reg_auto/rep,
-    # 'auto_adv': reg_auto_adv/rep,
     'op': reg_op/rep,
-    'grid': reg_grid/rep,
-    'grid_all': grid/rep,
 }
 
 

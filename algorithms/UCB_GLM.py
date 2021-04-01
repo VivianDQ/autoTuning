@@ -1,15 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import numpy as np
 import random
 import math
 from sklearn.linear_model import LogisticRegression
 from AutoTuning import *
-
 
 class UCB_GLM:
     def __init__(self, class_context, T):
@@ -17,7 +10,7 @@ class UCB_GLM:
         self.T = T
         self.d = self.data.d
 
-    def glmucb_fixed_explore(self, explore, lamda=10**(-3)):
+    def glmucb_theoretical_explore(self, lamda=1, delta=0.1):
         T = self.T
         d = self.data.d
         regret = np.zeros(T)
@@ -41,51 +34,11 @@ class UCB_GLM:
         # random pull in the first two rounds to make sure y[0] != y[1]
         B_inv = np.linalg.inv(B)
         for t in range(2, T):
+            explore = 0.01*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
             feature = self.data.fv[t]
             K = len(feature)
             ucb_idx = [0]*K
-            clf = LogisticRegression(penalty = 'none', fit_intercept = False, solver = 'lbfgs').fit(X, y)
-            theta = clf.coef_[0]
-            for arm in range(K):
-                ucb_idx[arm] = feature[arm].dot(theta) + explore * math.sqrt( feature[arm].T.dot(B_inv).dot(feature[arm]) )
-            pull = np.argmax(ucb_idx)
-            observe_r = self.data.random_sample(t, pull)
-            tmp = B_inv.dot(feature[pull])
-            B_inv -= np.outer(tmp, tmp)/ (1+feature[pull].dot(tmp))
-            y = np.concatenate((y, [observe_r]), axis = 0)
-            X = np.concatenate((X, [feature[pull]]), axis = 0)
-            regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
-        return regret
-    
-    def glmucb_theoretical_explore(self, lamda=10**(-3)):
-        T = self.T
-        d = self.data.d
-        regret = np.zeros(T)
-        B = np.identity(d) * lamda
-        theta_hat = np.zeros(d)
-        y = np.array([])
-        y = y.astype('int')
-        X = np.empty([0, d])
-        theta = np.zeros(d)
-        for t in range(2):
-            feature = self.data.fv[t]
-            K = len(feature)
-            pull = np.random.choice(K)
-            observe_r = self.data.random_sample(t, pull) 
-            y = np.concatenate((y, [observe_r]), axis = 0)
-            X = np.concatenate((X, [feature[pull]]), axis = 0)
-            regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
-            B += np.outer(feature[pull], feature[pull])
-        if y[0] == y[1]:
-            y[1] = 1-y[0]
-        # random pull in the first two rounds to make sure y[0] != y[1]
-        B_inv = np.linalg.inv(B)
-        for t in range(2, T):
-            explore = 0.5 * math.sqrt(d/2*math.log( 1+2*(t+1)/d ) + math.log(T)) # + math.sqrt(lamda)
-            feature = self.data.fv[t]
-            K = len(feature)
-            ucb_idx = [0]*K
-            clf = LogisticRegression(penalty = 'none', fit_intercept = False, solver = 'lbfgs').fit(X, y)
+            clf = LogisticRegression(penalty = 'l2', C = lamda, fit_intercept = False, solver = 'lbfgs').fit(X, y)
             theta = clf.coef_[0]
             for arm in range(K):
                 ucb_idx[arm] = feature[arm].dot(theta) + explore * math.sqrt( feature[arm].T.dot(B_inv).dot(feature[arm]) )
@@ -99,7 +52,7 @@ class UCB_GLM:
             regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
         return regret
     
-    def glmucb_auto(self, explore_rates, lamda=10**(-3)):
+    def glmucb_auto(self, explore_rates, lamda=1):
         T = self.T
         d = self.data.d
         regret = np.zeros(T)
@@ -135,7 +88,7 @@ class UCB_GLM:
             feature = self.data.fv[t]
             K = len(feature)
             ucb_idx = [0]*K
-            clf = LogisticRegression(penalty = 'none', fit_intercept = False, solver = 'lbfgs').fit(X, y)
+            clf = LogisticRegression(penalty = 'l2', C = lamda, fit_intercept = False, solver = 'lbfgs').fit(X, y)
             theta = clf.coef_[0]
             for arm in range(K):
                 ucb_idx[arm] = feature[arm].dot(theta) + explore * math.sqrt( feature[arm].T.dot(B_inv).dot(feature[arm]) )
@@ -151,10 +104,9 @@ class UCB_GLM:
             # update explore rates by auto_tuning
             logw, p, index = auto_tuning(logw, p, observe_r, index, gamma)
             explore = explore_rates[index]
-        return regret
-        
+        return regret    
     
-    def glmucb_op(self, explore_rates, lamda=10**(-3)):
+    def glmucb_op(self, explore_rates, lamda=1):
         T = self.T
         d = self.data.d
         regret = np.zeros(T)
@@ -188,7 +140,7 @@ class UCB_GLM:
             feature = self.data.fv[t]
             K = len(feature)
             ucb_idx = [0]*K
-            clf = LogisticRegression(penalty = 'none', fit_intercept = False, solver = 'lbfgs').fit(X, y)
+            clf = LogisticRegression(penalty = 'l2', C = lamda, fit_intercept = False, solver = 'lbfgs').fit(X, y)
             theta = clf.coef_[0]
             for arm in range(K):
                 ucb_idx[arm] = feature[arm].dot(theta) + explore * math.sqrt( feature[arm].T.dot(B_inv).dot(feature[arm]) )
@@ -203,60 +155,5 @@ class UCB_GLM:
             
             # update explore rates by op_tuning
             s, f, index = op_tuning(s, f, observe_r, index)
-            explore = explore_rates[index]
-        return regret
-
-    
-    def glmucb_auto_advanced(self, explore_rates, lamda=10**(-3)):
-        T = self.T
-        d = self.data.d
-        regret = np.zeros(T)
-        B = np.identity(d) * lamda
-        theta_hat = np.zeros(d)
-        y = np.array([])
-        y = y.astype('int')
-        X = np.empty([0, d])
-        theta = np.zeros(d)
-        for t in range(2):
-            feature = self.data.fv[t]
-            K = len(feature)
-            pull = np.random.choice(K)
-            observe_r = self.data.random_sample(t, pull) 
-            y = np.concatenate((y, [observe_r]), axis = 0)
-            X = np.concatenate((X, [feature[pull]]), axis = 0)
-            regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
-            B += np.outer(feature[pull], feature[pull])
-        if y[0] == y[1]:
-            y[1] = 1-y[0]
-        # random pull in the first two rounds to make sure y[0] != y[1]
-        B_inv = np.linalg.inv(B)
-        
-        # initialization for exp3.1 algo
-        Kexp = len(explore_rates)
-        logw = np.zeros(Kexp)
-        p = np.ones(Kexp) / Kexp
-        r = 0
-        ghat = np.zeros(Kexp)
-        index = np.random.choice(Kexp)
-        explore = explore_rates[index]
-        for t in range(2, T):
-            feature = self.data.fv[t]
-            K = len(feature)
-            ucb_idx = [0]*K
-            clf = LogisticRegression(penalty = 'none', fit_intercept = False, solver = 'lbfgs').fit(X, y)
-            theta = clf.coef_[0]
-            for arm in range(K):
-                ucb_idx[arm] = feature[arm].dot(theta) + explore * math.sqrt( feature[arm].T.dot(B_inv).dot(feature[arm]) )
-            pull = np.argmax(ucb_idx)
-            observe_r = self.data.random_sample(t, pull)
-            tmp = B_inv.dot(feature[pull])
-            B += np.outer(feature[pull], feature[pull])
-            B_inv -= np.outer(tmp, tmp)/ (1+feature[pull].dot(tmp))
-            y = np.concatenate((y, [observe_r]), axis = 0)
-            X = np.concatenate((X, [feature[pull]]), axis = 0)
-            regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
-            
-            # update explore rates by auto_tuning_advanced
-            logw, p, index, r, ghat = auto_tuning_exp31(logw, p, observe_r, index, r, ghat)
             explore = explore_rates[index]
         return regret

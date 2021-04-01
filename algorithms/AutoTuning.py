@@ -28,6 +28,7 @@ def op_tuning(s, f, reward, index):
     beta = np.array([np.random.beta(s[i], f[i]) for i in range(Kexp)])
     index = np.argmax(beta)
     return s, f, index
+
 '''
 def op_tuning(s, f, reward, index):
     Kexp = len(s)
@@ -38,29 +39,3 @@ def op_tuning(s, f, reward, index):
     index = np.argmax(beta)
     return s, f, index
 '''
-
-def auto_tuning_exp31(logw, p, reward, index, r, ghat):
-    Kexp = len(logw)
-    gr = Kexp * math.log(Kexp) / (np.exp(1)-1) * 4**r
-    gamma = min(1, math.sqrt(Kexp * math.log(Kexp) / (np.exp(1)-1) / gr ) )
-    
-    ghat[index] += reward / p[index]
-    if np.max(ghat) <= gr- Kexp/gamma:
-        logw, p, nxt_index = auto_tuning(logw, p, reward, index, gamma)
-        return logw, p, nxt_index, r, ghat
-    else:
-        while True:
-            r += 1
-            gr = Kexp * math.log(Kexp) / (np.exp(1)-1) * 4**r
-            gamma = min(1, math.sqrt(Kexp * math.log(Kexp) / (np.exp(1)-1) / gr ) )
-            if np.max(ghat) <= gr- Kexp/gamma:
-                break 
-        logw = np.zeros(Kexp)
-        p = np.ones(Kexp) / Kexp
-        logw, p, nxt_index = auto_tuning(logw, p, reward, index, gamma)
-        return logw, p, nxt_index, r, ghat # auto_tuning_exp31(logw, p, reward, index, r, ghat)
-    
-    
-    
-    
-    
