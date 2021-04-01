@@ -130,8 +130,8 @@ class movie:
             maxr = max(maxr, np.max(self.reward[t]))
             minr = min(minr, np.min(self.reward[t]))
         # make sure rewards are within 0 to 1
-        for t in range(self.T):
-            self.reward[t] = (self.reward[t] - minr) / (maxr - minr)
+        # for t in range(self.T):
+            # self.reward[t] = (self.reward[t] - minr) / (maxr - minr)
             self.optimal[t] = max(self.reward[t])
 
     def random_sample(self, t, i):
