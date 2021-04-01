@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import math
-from AutoTuning import *
+from algorithms.AutoTuning import *
 
 class LinUCB:
     def __init__(self, class_context, T):
