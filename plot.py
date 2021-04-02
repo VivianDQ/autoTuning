@@ -38,7 +38,7 @@ def draw_figure():
             title = 'Netflix, d=20, K=100'
         fig = plot.figure(figsize=(6,4))
         matplotlib.rc('font',family='serif')
-        params = {'font.size': 18, 'axes.labelsize': 18, 'font.size': 18, 'legend.fontsize': 18,'xtick.labelsize': 12,'ytick.labelsize': 12, 'axes.formatter.limits':(-8,8)}
+        params = {'font.size': 18, 'axes.labelsize': 18, 'font.size': 18, 'legend.fontsize': 12,'xtick.labelsize': 12,'ytick.labelsize': 12, 'axes.formatter.limits':(-8,8)}
         pylab.rcParams.update(params)
         leg = []
         keys = os.listdir(path)
@@ -55,7 +55,7 @@ def draw_figure():
             data = np.loadtxt(path+key)
             T = len(data)
             plot.plot((list(range(T))), data, linestyle = plot_style[key][0], color = plot_style[key][1], linewidth = 2)
-        plot.legend((leg), loc='upper left', fontsize=18, frameon=False)
+        plot.legend((leg), loc='upper left', fontsize=12, frameon=False)
         plot.xlabel('Iterations')
         plot.ylabel(y_label)
         plot.title(title)
