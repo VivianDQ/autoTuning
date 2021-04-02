@@ -66,18 +66,17 @@ if datatype == 'movielens' or datatype == 'netflix':
 ub = 1/math.sqrt(d)
 lb = -1/math.sqrt(d)
 
-reg_grid = np.zeros(T)
-reg_theory = np.zeros(T)
-reg_auto = np.zeros(T)
-reg_op = np.zeros(T)
-
 min_rate = 0
 max_rate = 0.01*math.sqrt( d*math.log((T/lamda+1)/delta) ) + math.sqrt(lamda) + explore_interval_length
 if args.max_rate != -1:
     max_rate = args.max_rate
 J = np.arange(min_rate, max_rate, explore_interval_length)
-lamdas = [0.1, 0.5, 1]
+lamdas = [1, 0.5, 0.1]
 print("candidate set {}".format(J))
+
+reg_theory = np.zeros((len(lamdas),T))
+reg_auto = np.zeros(T)
+reg_op = np.zeros(T)
 
 methods = {
     'theory': '_theoretical_explore',
@@ -117,9 +116,9 @@ for i in range(rep):
     }
     result = {}
     for i,lamda in enumerate(lamdas):
-        reg_theory += fcts['theory'](lamda, delta)
-        result['theory_lambda={}'.format(lamda)] = reg_theory/(i+1)
-        print('theory_lambda={}: {}'.format(lamda, reg_theory[-1]), end = " ")
+        reg_theory[i,:] += fcts['theory'](lamda, delta)
+        result['theory_lambda={}'.format(lamda)] = reg_theory[i,:]/(i+1)
+        print('theory_lambda={}: {}'.format(lamda, reg_theory[i,-1]), end = " ")
         
     reg_op += fcts['op'](J, lamdas)
     result['op'] = reg_op/(i+1)
