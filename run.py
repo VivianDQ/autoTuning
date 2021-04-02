@@ -38,13 +38,13 @@ lamda = args.lamda
 delta = args.delta
 datatype = args.data
 
-if not os.path.exists('results1/'):
-    os.mkdir('results1/')
-if not os.path.exists('results1/' + datatype + '/'):
-    os.mkdir('results1/' + datatype + '/')
-if not os.path.exists('results1/' + datatype + '/' + algo + '/'):
-    os.mkdir('results1/' + datatype + '/' + algo + '/')
-path = 'results1/' + datatype + '/' + algo + '/'
+if not os.path.exists('results/'):
+    os.mkdir('results/')
+if not os.path.exists('results/' + datatype + '/'):
+    os.mkdir('results/' + datatype + '/')
+if not os.path.exists('results/' + datatype + '/' + algo + '/'):
+    os.mkdir('results/' + datatype + '/' + algo + '/')
+path = 'results/' + datatype + '/' + algo + '/'
 
 if datatype == 'movielens' or datatype == 'netflix':
     # check real data files exist:
@@ -66,16 +66,17 @@ if datatype == 'movielens' or datatype == 'netflix':
 ub = 1/math.sqrt(d)
 lb = -1/math.sqrt(d)
 
-reg_grid = np.zeros(T)
 reg_theory = np.zeros(T)
 reg_auto = np.zeros(T)
 reg_op = np.zeros(T)
+reg_auto_3layer = np.zeros(T)
 
 min_rate = 0
 max_rate = 0.01*math.sqrt( d*math.log((T/lamda+1)/delta) ) + math.sqrt(lamda) + explore_interval_length
 if args.max_rate != -1:
     max_rate = args.max_rate
 J = np.arange(min_rate, max_rate, explore_interval_length)
+lamdas = [1, 0.5, 0.1]
 print("candidate set {}".format(J))
 
 grid = np.zeros((len(J),T))
@@ -83,6 +84,7 @@ methods = {
     'theory': '_theoretical_explore',
     'auto': '_auto',
     'op': '_op',
+    'auto_3layer': '_auto_3layer',
 }
 for i in range(rep):
     print(i, ": ", end = " ")
@@ -114,17 +116,20 @@ for i in range(rep):
         k: getattr(algo_class, algo+methods[k]) 
         for k,v in methods.items()
     }
+    reg_theory += fcts['theory'](lamda, delta)
     reg_auto += fcts['auto'](J, lamda)
     reg_op += fcts['op'](J, lamda)
-    reg_theory += fcts['theory'](lamda, delta)
+    reg_auto_3layer += fcts['auto_3layer'](J, lamdas)
     
-    print("theory {}, auto {}, op {}".format(
-        reg_theory[-1], reg_auto[-1], reg_op[-1]))
+    
+    print("theory {}, auto {}, op {}, auto_3layer {}".format(
+        reg_theory[-1], reg_auto[-1], reg_op[-1], reg_auto_3layer[-1]))
     
     result = {
         'theory': reg_theory/(i+1),
         'auto': reg_auto/(i+1),
         'op': reg_op/(i+1),
+        'auto_3layer': reg_auto_3layer/(i+1),
     }
     for k,v in result.items():
         np.savetxt(path + k, v)   
