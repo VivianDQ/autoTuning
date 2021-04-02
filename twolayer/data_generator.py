@@ -110,7 +110,7 @@ class movie:
         self.fv = np.zeros((T, K, d))
         self.max_norm = float('-Inf')
         for t in range(T):
-            idx = np.random.choice(num_movie, K)
+            idx = np.random.choice(num_movie, K, replace=False)
             self.fv[t] = fv[idx, :]
             cur_max_norm = np.max( [np.linalg.norm(feature) for feature in self.fv[t]] )
             self.max_norm = max(self.max_norm, cur_max_norm)

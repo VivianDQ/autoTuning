@@ -38,13 +38,13 @@ lamda = args.lamda
 delta = args.delta
 datatype = args.data
 
-if not os.path.exists('results/'):
-    os.mkdir('results/')
-if not os.path.exists('results/' + datatype + '/'):
-    os.mkdir('results/' + datatype + '/')
-if not os.path.exists('results/' + datatype + '/' + algo + '/'):
-    os.mkdir('results/' + datatype + '/' + algo + '/')
-path = 'results/' + datatype + '/' + algo + '/'
+if not os.path.exists('results1/'):
+    os.mkdir('results1/')
+if not os.path.exists('results1/' + datatype + '/'):
+    os.mkdir('results1/' + datatype + '/')
+if not os.path.exists('results1/' + datatype + '/' + algo + '/'):
+    os.mkdir('results1/' + datatype + '/' + algo + '/')
+path = 'results1/' + datatype + '/' + algo + '/'
 
 if datatype == 'movielens' or datatype == 'netflix':
     # check real data files exist:
@@ -114,12 +114,12 @@ for i in range(rep):
         k: getattr(algo_class, algo+methods[k]) 
         for k,v in methods.items()
     }
-    
-    reg_theory += fcts['theory'](lamda, delta)
 
     reg_op += fcts['op'](J, lamda)
     
     reg_auto += fcts['auto'](J, lamda)
+    
+    reg_theory += fcts['theory'](lamda, delta)
     
     print("theory {}, auto {}, op {}".format(
         reg_theory[-1], reg_auto[-1], reg_op[-1]))

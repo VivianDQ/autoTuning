@@ -38,13 +38,13 @@ lamda = args.lamda
 delta = args.delta
 datatype = args.data
 
-if not os.path.exists('results/'):
-    os.mkdir('results/')
-if not os.path.exists('results/' + datatype + '/'):
-    os.mkdir('results/' + datatype + '/')
-if not os.path.exists('results/' + datatype + '/' + algo + '/'):
-    os.mkdir('results/' + datatype + '/' + algo + '/')
-path = 'results/' + datatype + '/' + algo + '/'
+if not os.path.exists('results2/'):
+    os.mkdir('results2/')
+if not os.path.exists('results2/' + datatype + '/'):
+    os.mkdir('results2/' + datatype + '/')
+if not os.path.exists('results2/' + datatype + '/' + algo + '/'):
+    os.mkdir('results2/' + datatype + '/' + algo + '/')
+path = 'results2/' + datatype + '/' + algo + '/'
 
 if datatype == 'movielens' or datatype == 'netflix':
     # check real data files exist:
@@ -115,17 +115,20 @@ for i in range(rep):
         for k,v in methods.items()
     }
     result = {}
+    
+    reg_op += fcts['op'](J, lamdas)
+    
+    reg_auto += fcts['auto'](J, lamdas)
+    result = {
+        'auto': reg_auto/(i+1),
+        'op': reg_op/(i+1),
+    }
+    
     for i,lamda in enumerate(lamdas):
         reg_theory[i,:] += fcts['theory'](lamda, delta)
         result['theory_lambda={}'.format(lamda)] = reg_theory[i,:]/(i+1)
         print('theory_lambda={}: {}'.format(lamda, reg_theory[i,-1]), end = " ")
-        
-    reg_op += fcts['op'](J, lamdas)
-    result['op'] = reg_op/(i+1)
-    
-    reg_auto += fcts['auto'](J, lamdas)
-    result['auto'] = reg_auto/(i+1)
-    
+
     print("auto {}, op {}".format(reg_auto[-1], reg_op[-1]))
     for k,v in result.items():
         np.savetxt(path + k, v)   
