@@ -76,7 +76,7 @@ max_rate = 0.01*math.sqrt( d*math.log((T/lamda+1)/delta) ) + math.sqrt(lamda) + 
 if args.max_rate != -1:
     max_rate = args.max_rate
 J = np.arange(min_rate, max_rate, explore_interval_length)
-lamdas = [1, 0.5, 0.1]
+lamdas = np.arange(0.1, 1.1, 0.1)
 print("candidate set {}".format(J))
 
 grid = np.zeros((len(J),T))
@@ -117,8 +117,8 @@ for i in range(rep):
         for k,v in methods.items()
     }
     reg_theory += fcts['theory'](lamda, delta)
-    reg_auto += fcts['auto'](J, lamda)
     reg_op += fcts['op'](J, lamda)
+    reg_auto += fcts['auto'](J, lamda)
     reg_auto_3layer += fcts['auto_3layer'](J, lamdas)
     
     
