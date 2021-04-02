@@ -22,7 +22,7 @@ class LinTS:
             feature = self.data.fv[t]
             K = len(feature)
             
-            explore = 0.01*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
+            explore = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
             theta_ts = np.random.multivariate_normal(theta_hat, explore**2*B_inv)
             ucb_idx = [0]*K
             for arm in range(K):

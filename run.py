@@ -24,6 +24,7 @@ parser.add_argument('-d', '--d', type=int, default = 5, help = 'dimension')
 parser.add_argument('-data', '--data', type=str, default = 'simulations', help = 'can be netflix or movielens')
 parser.add_argument('-lamda', '--lamda', type=float, default = 1, help = 'lambda, regularization parameter')
 parser.add_argument('-delta', '--delta', type=float, default = 0.1, help = 'error probability')
+parser.add_argument('-sigma', '--sigma', type=float, default = 0.01, help = 'sub gaussian parameter')
 args = parser.parse_args()
 
 
@@ -37,6 +38,7 @@ K = args.k
 lamda = args.lamda
 delta = args.delta
 datatype = args.data
+sigma = args.sigma
 
 if not os.path.exists('results/'):
     os.mkdir('results/')
@@ -72,7 +74,7 @@ reg_op = np.zeros(T)
 reg_auto_3layer = np.zeros(T)
 
 min_rate = 0
-max_rate = 0.01*math.sqrt( d*math.log((T/lamda+1)/delta) ) + math.sqrt(lamda) + explore_interval_length
+max_rate = sigma*math.sqrt( d*math.log((T/lamda+1)/delta) ) + math.sqrt(lamda) + explore_interval_length
 if args.max_rate != -1:
     max_rate = args.max_rate
 J = np.arange(min_rate, max_rate, explore_interval_length)
@@ -97,12 +99,12 @@ for i in range(rep):
         elif datatype in ['movielens', 'netflix']:
             theta = thetas[i, :]
             context = data_generator.movie
-        bandit = context(K, T, d, true_theta = theta, fv=fv)
+        bandit = context(K, T, d, sigma, true_theta = theta, fv=fv)
     elif 'glm' in algo:
         theta = np.random.uniform(lb, ub, d)
         fv = np.random.uniform(lb, ub, (T, K, d))
         context_logistic = data_generator.context_logistic
-        bandit = context_logistic(K, lb, ub, T, d, true_theta = theta, fv=fv)
+        bandit = context_logistic(K, lb, ub, T, d, sigma, true_theta = theta, fv=fv)
     bandit.build_bandit()
     
     if algo == 'linucb':

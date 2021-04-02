@@ -23,7 +23,7 @@ class LinUCB:
             K = len(feature)
             ucb_idx = [0]*K
             
-            explore = 0.01*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
+            explore = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
             for arm in range(K):
                 ucb_idx[arm] = feature[arm].dot(theta_hat) + explore * math.sqrt( feature[arm].T.dot(B_inv).dot(feature[arm]) )
             pull = np.argmax(ucb_idx)

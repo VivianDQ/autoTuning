@@ -3,7 +3,7 @@ import random
 import math
 
 class context:
-    def __init__(self, K, T, d, true_theta, fv = None):
+    def __init__(self, K, T, d, sigma, true_theta, fv = None):
         self.ub = 1/math.sqrt(d)
         self.lb = -1/math.sqrt(d)
         if fv is None:
@@ -16,6 +16,7 @@ class context:
         self.optimal = [None] * self.T
         self.theta = true_theta
         self.max_norm = 1
+        self.sigma = sigma
         
     def build_bandit(self):
         for t in range(self.T):
@@ -25,7 +26,7 @@ class context:
             self.optimal[t] = max(self.reward[t])
             
     def random_sample(self, t, i):
-        return np.random.normal(self.reward[t][i], 0.01)
+        return np.random.normal(self.reward[t][i], self.sigma)
     
     
 class context_logistic:
@@ -105,7 +106,7 @@ class covtype_linear:
         
         
 class movie:
-    def __init__(self, K = 100, T = 10000, d = 5, true_theta = None, fv = None):
+    def __init__(self, K = 100, T = 10000, d = 5, sigma = 0.01, true_theta = None, fv = None):
         num_movie = len(fv)
         self.fv = np.zeros((T, K, d))
         self.max_norm = float('-Inf')
@@ -121,6 +122,7 @@ class movie:
         self.reward = [None] * self.T
         self.optimal = [None] * self.T
         self.theta = true_theta
+        self.sigma = sigma
         
     def build_bandit(self):
         maxr = float('-Inf')
@@ -135,4 +137,4 @@ class movie:
             self.optimal[t] = max(self.reward[t])
 
     def random_sample(self, t, i):
-        return np.random.normal(self.reward[t][i], 0.01)
+        return np.random.normal(self.reward[t][i], self.sigma)
