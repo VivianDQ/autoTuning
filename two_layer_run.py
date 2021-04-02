@@ -84,8 +84,6 @@ methods = {
     'auto': '_auto',
     'op': '_op',
 }
-for i,lamda in enumerate(lamdas):
-    methods['theory{}'.format(i+1)] = '_theoretical_explore_lambda={}'.format(lamdas[i])
     
 for i in range(rep):
     print(i, ": ", end = " ")
