@@ -119,6 +119,7 @@ for i in range(rep):
     for i,lamda in enumerate(lamdas):
         reg_theory += fcts['theory'](lamda, delta)
         result['theory_lambda={}'.format(lamda)] = reg_theory/(i+1)
+        print('theory_lambda={}: {}'.format(lamda, reg_theory[-1]), end = " ")
         
     reg_op += fcts['op'](J, lamdas)
     result['op'] = reg_op/(i+1)
@@ -126,7 +127,6 @@ for i in range(rep):
     reg_auto += fcts['auto'](J, lamdas)
     result['auto'] = reg_auto/(i+1)
     
-    print("theory {}, auto {}, op {}".format(
-        reg_theory[-1], reg_auto[-1], reg_op[-1]))
+    print("auto {}, op {}".format(reg_auto[-1], reg_op[-1]))
     for k,v in result.items():
         np.savetxt(path + k, v)   
