@@ -114,11 +114,8 @@ for i in range(rep):
         k: getattr(algo_class, algo+methods[k]) 
         for k,v in methods.items()
     }
-
-    reg_op += fcts['op'](J, lamda)
-    
     reg_auto += fcts['auto'](J, lamda)
-    
+    reg_op += fcts['op'](J, lamda)
     reg_theory += fcts['theory'](lamda, delta)
     
     print("theory {}, auto {}, op {}".format(

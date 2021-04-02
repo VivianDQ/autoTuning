@@ -114,11 +114,8 @@ for i in range(rep):
         k: getattr(algo_class, algo+methods[k]) 
         for k,v in methods.items()
     }
-    result = {}
-    
-    reg_op += fcts['op'](J, lamdas)
-    
     reg_auto += fcts['auto'](J, lamdas)
+    reg_op += fcts['op'](J, lamdas)
     result = {
         'auto': reg_auto/(i+1),
         'op': reg_op/(i+1),
