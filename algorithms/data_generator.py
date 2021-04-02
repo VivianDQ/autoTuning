@@ -6,7 +6,6 @@ class context:
     def __init__(self, K, T, d, true_theta, fv = None):
         self.ub = 1/math.sqrt(d)
         self.lb = -1/math.sqrt(d)
-        print(self.ub, self.lb)
         if fv is None:
             fv = np.random.uniform(self.lb, self.ub, (T, K, d))
         self.K = K  
