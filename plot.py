@@ -23,7 +23,7 @@ def draw_figure():
     cat = os.listdir(root)
     paths = []
     for c in cat:
-        if 'movielens' not in c and 'covtype' not in c and 'yahoo' not in c and 'simulation' not in c: continue
+        if 'movielens' not in c and 'netflix' not in c and 'simulation' not in c: continue
         folders = os.listdir(root+c)
         for folder in folders:
             paths.append(root + c + '/' + folder + '/')
