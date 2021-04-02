@@ -4,12 +4,13 @@ import math
 
 class context:
     def __init__(self, K, T, d, true_theta, fv = None):
-        if fv is None:
-            fv = np.random.uniform(lb_fv, ub_fv, (T, K, d))
-        self.K = K  
-        self.d = d
         self.ub = 1/math.sqrt(d)
         self.lb = -1/math.sqrt(d)
+        print(self.ub, self.lb)
+        if fv is None:
+            fv = np.random.uniform(self.lb, self.ub, (T, K, d))
+        self.K = K  
+        self.d = d
         self.T = T
         self.fv = fv
         self.reward = [None] * self.T
