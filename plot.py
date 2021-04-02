@@ -7,22 +7,14 @@ from matplotlib import pylab
 
 def draw_figure():
     plot_style = {
-            'fixed': ['-.', 'green', 'Fixed-Explore'],
             'theory': ['--', 'orange', 'Theoretical-Explore'],
             'auto': ['--', 'red', 'Auto-Tuning'],
-            # 'auto_adv': ['-', 'red', 'Auto-Tuning-Advanced'],
             'op': [':', 'blue', 'OP'],
-            'grid': ['--', 'purple', 'Grid-Search'],
-            # 'supcb': ['--', 'pink', 'SupCB-GLM'],  
-            # 'eps': ['--', 'gray', 'Eps-Greedy'],
         }
     plot_prior = {
-            'fixed': 1,
             'theory': 2,
             'op': 3,
             'auto': 4,
-            'auto_adv': 5,
-            'grid': 6,
         }
     root = 'results/'
     if not os.path.exists('plots/'):
@@ -39,16 +31,9 @@ def draw_figure():
         algo = path.split('/')[-2]
         fn = path.split('/')[-3]
         if 'simulation' in fn:
-            _, dstr, Kstr = fn.split('_')
-            d = int(dstr[1:])
-            K = int(Kstr[1:])
-            title = 'Simulation, d={}, K={}'.format(d, K)
-        elif 'movie' in fn:
-            title = 'Movielens, d=5, K=100'
-        elif 'covtype_random_feature' in fn:
-            title = 'Covtype, d=55'
-        elif 'covtype' in fn:
-            title = 'Covtype, d=10'
+            title = 'Simulation, d={}, K={}'.format(20, 10)
+        elif 'movie' in fn or 'netflix' in fn:
+            title = 'Movielens, d=20, K=100'
         fig = plot.figure(figsize=(6,4))
         matplotlib.rc('font',family='serif')
         params = {'font.size': 18, 'axes.labelsize': 18, 'font.size': 12, 'legend.fontsize': 12,'xtick.labelsize': 12,'ytick.labelsize': 12, 'axes.formatter.limits':(-8,8)}
