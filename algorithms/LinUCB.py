@@ -151,7 +151,7 @@ class LinUCB:
         index_lam = np.random.choice(Klam)
         lamda = lamdas[index_lam]
         
-        xxt = np.zeros(d)
+        xxt = np.zeros((d,d))
         B_inv = np.identity(d) / lamda
         for t in range(T):
             feature = self.data.fv[t]
