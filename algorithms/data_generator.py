@@ -89,22 +89,28 @@ class covtype_random_feature:
         self.d = dim
         self.T = T
         self.fv = []
-        self.reward = [reward for t in range(self.T)]
+        self.reward = [None for t in range(self.T)]
         self.optimal = [max(reward) for t in range(self.T)]
         self.data = data
         self.y = []
         
-    def build_bandit(self):
+    def logistic(self, x):
+        return 1/(1+np.exp(-x))
+    
+    def build_bandit(self, theta):
         for t in range(self.T):
             tmp = [None for _ in range(32)]
             tmpy = [0]*32
             idx = self.data[2]
+            tmpr = [0]*32
             for i in range(32):
                 data_idx = np.random.choice(idx[i])
                 tmp[i] = self.data[0][data_idx]
                 tmpy[i] = self.data[1][data_idx]
+                tmpr[i] = self.logistic(tmp[i].dot(theta))
             self.fv.append(np.array(tmp))
             self.y.append(tmpy)
+            self.reward[t] = tmpr
             
     def random_sample(self, t, i):
         return int(self.y[t][i])

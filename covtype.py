@@ -6,6 +6,7 @@ import argparse
 import time
 import gzip
 import pickle
+from sklearn.linear_model import LogisticRegression
 
 from algorithms.data_generator import *
 from algorithms.UCB_GLM import *
@@ -91,6 +92,9 @@ if d == 55:
     bandit_data = (X, y, idx)
     d = X.shape[1]
     print('d {}, K {}, T {}'.format(d,K,T))
+    
+clf = LogisticRegression(penalty = 'l2', C = lamda, fit_intercept = False, solver = 'lbfgs').fit(X, y)
+theta = clf.coef_[0]
 
 reg_theory = np.zeros(T)
 reg_auto = np.zeros(T)
@@ -119,7 +123,7 @@ for i in range(rep):
         bandit = covtype(rewards, features, T, d)
     else:
         bandit = covtype_random_feature(rewards, bandit_data, T, d)
-        bandit.build_bandit()    
+        bandit.build_bandit(theta)    
     max_rate = sigma*math.sqrt( d*math.log((T*bandit.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)*bandit.max_norm + explore_interval_length
     J = np.arange(min_rate, max_rate, explore_interval_length)
     if i==0: print("candidate set {}".format(J))

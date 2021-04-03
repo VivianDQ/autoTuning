@@ -10,8 +10,10 @@ def draw_figure():
             'theory': ['--', 'orange', 'Theoretical-Explore'],
             'auto': ['-', 'red', 'Auto-Tuning'],
             'op': [':', 'blue', 'OP'],
+            'auto_3layer': ['-:', 'purple', 'Auto-Tuning-3Layer'],
         }
     plot_prior = {
+            'auto_3layer': 1,
             'theory': 2,
             'op': 3,
             'auto': 4,
