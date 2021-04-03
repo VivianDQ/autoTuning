@@ -127,12 +127,8 @@ class covtype_linear:
         self.reward = [reward for t in range(self.T)]
         self.optimal = [max(reward) for t in range(self.T)]  
     def random_sample(self, t, i):
-        # return np.random.normal(self.reward[t][i], 0.1)
-        return np.random.beta(5, (5-5*self.reward[t][i]) / self.reward[t][i])
-        # return np.random.binomial(1, self.reward[t][i])
-
-        
-        
+        return np.random.binomial(1, self.reward[t][i])
+       
 class movie:
     def __init__(self, K = 100, T = 10000, d = 5, sigma = 0.01, true_theta = None, fv = None):
         num_movie = len(fv)
