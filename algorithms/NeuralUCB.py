@@ -46,21 +46,20 @@ class NeuralUCB:
         self.T = T
         self.d = self.data.d
         self.random_sample = self.data.random_sample
-        
-    def train(self, X, Y, W, Wl, max_ite, m, optimize = 'sgd', eta = 0.1): # or optimize = 'adagrad'
-        tensor_x = torch.Tensor(X) # transform to torch tensor
-        tensor_y = torch.Tensor(Y)
-        my_dataset = torch.utils.data.TensorDataset(tensor_x, tensor_y) # create your datset
-        my_dataloader = torch.utils.data.DataLoader(my_dataset, batch_size = 50) 
-        net = Net(m)
-        
         if torch.cuda.is_available():
             dev = "cuda:0" 
         else:
             dev = "cpu"
-        device = torch.device(dev)    
-        net = net.to(device)
+        self.device = torch.device(dev)  
         
+    def train(self, X, Y, W, Wl, max_ite, m, optimize = 'sgd', eta = 0.1): # or optimize = 'adagrad'
+        device = self.device
+        tensor_x = torch.Tensor(X) # transform to torch tensor
+        tensor_y = torch.Tensor(Y)
+        my_dataset = torch.utils.data.TensorDataset(tensor_x, tensor_y) # create your datset
+        my_dataloader = torch.utils.data.DataLoader(my_dataset, batch_size = 50) 
+
+        net = Net(m).to(device)
         net.fc1.weight = torch.nn.Parameter(W)
         net.fc2.weight = torch.nn.Parameter(Wl)
         criterion = nn.MSELoss()
@@ -78,19 +77,20 @@ class NeuralUCB:
                 optimizer.zero_grad()
 
                 # forward + backward + optimize
-                outputs = net.forward(x)
+                outputs = net.forward(x.to(device))
                 loss = criterion(math.sqrt(m)*outputs, y) + m/2 * (net.fc1.weight - W).norm(2)**2 + m/2*(net.fc2.weight - Wl).norm(2)**2
                 loss.backward()
                 optimizer.step()
         return net
         
     def neuralucb_theoretical_explore(self, gamma_t = 1, eta = 0.1, m = 20, lamda = 1, optimize = 'sgd'): # or optimize = 'adagrad'
+        device = self.device
         T = self.T
         K = self.data.K
         d = self.data.d
         regret = np.zeros(self.T)
         
-        net = Net(m)
+        net = Net(m).to(device)
         w = np.random.normal(0,4/m,(m//2,m//2))
         W = np.block([
         [w,               np.zeros((m//2, m//2))],
@@ -100,7 +100,8 @@ class NeuralUCB:
         W_L = w_l + [-x for x in w_l]
         tensor_W = torch.Tensor(W)
         tensor_Wl = torch.Tensor(W_L)
-
+        tensor_W, tensor_Wl = tensor_W.to(device), tensor_Wl.to(device)
+        
         X = []
         Y = []
         Zt = np.identity(m*m + m)*lamda
@@ -109,13 +110,14 @@ class NeuralUCB:
         ucb_idx = np.zeros(K)
         grad = [np.zeros(d)] * K
     
+        t0 = time.time()
         for t in range(T):
             feature = self.data.fv[t]
-            w1 = np.array(net.state_dict()['fc1.weight'])
-            w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
+            w1 = net.state_dict()['fc1.weight'].numpy()
+            w2 = net.state_dict()['fc2.weight'].numpy().reshape((m,1))
             for arm in range(K):
                 grad[arm] = net.grad(feature[arm], w1, w2, m)
-                ucb_idx[arm] = net.forward(torch.Tensor(feature[arm])) + gamma_t / math.sqrt(m) * math.sqrt(grad[arm].dot(Zt_inv).dot(grad[arm]))
+                ucb_idx[arm] = net.forward(torch.Tensor(feature[arm]).to(device)) + gamma_t / math.sqrt(m) * math.sqrt(grad[arm].dot(Zt_inv).dot(grad[arm]))
             
             pull = np.argmax(ucb_idx)
             observe_r = self.random_sample(t, pull)
@@ -123,9 +125,11 @@ class NeuralUCB:
             X.append(feature[pull])
             if t%50 == 49:
                 net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize, eta = eta)
-                w1 = np.array(net.state_dict()['fc1.weight'])
-                w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
+                w1 = net.state_dict()['fc1.weight'].numpy()
+                w2 = net.state_dict()['fc2.weight'].numpy().reshape((m,1))
                 grad[pull] = net.grad(feature[arm], w1, w2, m)
+                print(t, regret[t-1], time.time()-t0)
+                t0 = time.time()
             left = Zt_inv.dot(grad[pull])
             Zt_inv -= np.outer(left, left) / (1 + grad[pull].dot(Zt_inv).dot(grad[pull]))
             
@@ -135,6 +139,7 @@ class NeuralUCB:
         return regret
     
     def neuralucb_auto(self, explore_rates, eta = 0.1, m = 20, lamda = 1, optimize = 'sgd'): # or optimize = 'adagrad'
+        device = self.device
         T = self.T
         K = self.data.K
         d = self.data.d
@@ -150,7 +155,8 @@ class NeuralUCB:
         W_L = w_l + [-x for x in w_l]
         tensor_W = torch.Tensor(W)
         tensor_Wl = torch.Tensor(W_L)
-
+        tensor_W, tensor_Wl = tensor_W.to(device), tensor_Wl.to(device)
+        
         X = []
         Y = []
         Zt = np.identity(m*m + m)*lamda
@@ -172,13 +178,14 @@ class NeuralUCB:
         index = np.random.choice(Kexp)
         explore = explore_rates[index]
         
+        t0 = time.time()
         for t in range(T):
             feature = self.data.fv[t]
-            w1 = np.array(net.state_dict()['fc1.weight'])
-            w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
+            w1 = net.state_dict()['fc1.weight'].numpy()
+            w2 = net.state_dict()['fc2.weight'].numpy().reshape((m,1))
             for arm in range(K):
                 grad[arm] = net.grad(feature[arm], w1, w2, m)
-                ucb_idx[arm] = net.forward(torch.Tensor(feature[arm])) + explore / math.sqrt(m) * math.sqrt(grad[arm].dot(Zt_inv).dot(grad[arm]))
+                ucb_idx[arm] = net.forward(torch.Tensor(feature[arm]).to(device)) + explore / math.sqrt(m) * math.sqrt(grad[arm].dot(Zt_inv).dot(grad[arm]))
             
             pull = np.argmax(ucb_idx)
             observe_r = self.random_sample(t, pull)
@@ -186,9 +193,11 @@ class NeuralUCB:
             X.append(feature[pull])
             if t%50 == 49:
                 net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize, eta = eta)
-                w1 = np.array(net.state_dict()['fc1.weight'])
-                w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
+                w1 = net.state_dict()['fc1.weight'].numpy()
+                w2 = net.state_dict()['fc2.weight'].numpy().reshape((m,1))
                 grad[pull] = net.grad(feature[arm], w1, w2, m)
+                print(t, regret[t-1], time.time()-t0)
+                t0 = time.time()
             left = Zt_inv.dot(grad[pull])
             Zt_inv -= np.outer(left, left) / (1 + grad[pull].dot(Zt_inv).dot(grad[pull]))
             regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
@@ -199,6 +208,7 @@ class NeuralUCB:
         return regret
     
     def neuralucb_auto_3layer(self, explore_rates, etas, m = 20, lamda = 1, optimize = 'sgd'): # or optimize = 'adagrad'
+        device = self.device
         T = self.T
         K = self.data.K
         d = self.data.d
@@ -214,7 +224,8 @@ class NeuralUCB:
         W_L = w_l + [-x for x in w_l]
         tensor_W = torch.Tensor(W)
         tensor_Wl = torch.Tensor(W_L)
-
+        tensor_W, tensor_Wl = tensor_W.to(device), tensor_Wl.to(device)
+        
         X = []
         Y = []
         Zt = np.identity(m*m + m)*lamda
@@ -244,13 +255,14 @@ class NeuralUCB:
         index_lam = np.random.choice(Klam)
         eta = etas[index_lam]
         
+        t0 = time.time()
         for t in range(T):
             feature = self.data.fv[t]
-            w1 = np.array(net.state_dict()['fc1.weight'])
-            w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
+            w1 = net.state_dict()['fc1.weight'].numpy()
+            w2 = net.state_dict()['fc2.weight'].numpy().reshape((m,1))
             for arm in range(K):
                 grad[arm] = net.grad(feature[arm], w1, w2, m)
-                ucb_idx[arm] = net.forward(torch.Tensor(feature[arm])) + explore / math.sqrt(m) * math.sqrt(grad[arm].dot(Zt_inv).dot(grad[arm]))
+                ucb_idx[arm] = net.forward(torch.Tensor(feature[arm]).to(device)) + explore / math.sqrt(m) * math.sqrt(grad[arm].dot(Zt_inv).dot(grad[arm]))
             
             pull = np.argmax(ucb_idx)
             observe_r = self.random_sample(t, pull)
@@ -258,9 +270,11 @@ class NeuralUCB:
             X.append(feature[pull])
             if t%50 == 49:
                 net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize, eta = eta)
-                w1 = np.array(net.state_dict()['fc1.weight'])
-                w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
+                w1 = net.state_dict()['fc1.weight'].numpy()
+                w2 = net.state_dict()['fc2.weight'].numpy().reshape((m,1))
                 grad[pull] = net.grad(feature[arm], w1, w2, m)
+                print(t, regret[t-1], time.time()-t0)
+                t0 = time.time()
             left = Zt_inv.dot(grad[pull])
             Zt_inv -= np.outer(left, left) / (1 + grad[pull].dot(Zt_inv).dot(grad[pull]))
             regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
@@ -274,6 +288,7 @@ class NeuralUCB:
         return regret
     
     def neuralucb_op(self, explore_rates, eta = 0.1, m = 20, lamda = 1, optimize = 'sgd'): # or optimize = 'adagrad'
+        device = self.device
         T = self.T
         K = self.data.K
         d = self.data.d
@@ -289,7 +304,8 @@ class NeuralUCB:
         W_L = w_l + [-x for x in w_l]
         tensor_W = torch.Tensor(W)
         tensor_Wl = torch.Tensor(W_L)
-
+        tensor_W, tensor_Wl = tensor_W.to(device), tensor_Wl.to(device)
+        
         X = []
         Y = []
         Zt = np.identity(m*m + m)*lamda
@@ -309,10 +325,11 @@ class NeuralUCB:
         index = np.random.choice(Kexp)
         explore = explore_rates[index]
         
+        t0 = time.time()
         for t in range(T):
             feature = self.data.fv[t]
-            w1 = np.array(net.state_dict()['fc1.weight'])
-            w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
+            w1 = net.state_dict()['fc1.weight'].numpy()
+            w2 = net.state_dict()['fc2.weight'].numpy().reshape((m,1))
             for arm in range(K):
                 grad[arm] = net.grad(feature[arm], w1, w2, m)
                 ucb_idx[arm] = net.forward(torch.Tensor(feature[arm])) + explore / math.sqrt(m) * math.sqrt(grad[arm].dot(Zt_inv).dot(grad[arm]))
@@ -323,9 +340,11 @@ class NeuralUCB:
             X.append(feature[pull])
             if t%50 == 49:
                 net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize, eta = eta)
-                w1 = np.array(net.state_dict()['fc1.weight'])
-                w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
+                w1 = net.state_dict()['fc1.weight'].numpy()
+                w2 = net.state_dict()['fc2.weight'].numpy().reshape((m,1))
                 grad[pull] = net.grad(feature[arm], w1, w2, m)
+                print(t, regret[t-1], time.time()-t0)
+                t0 = time.time()
             left = Zt_inv.dot(grad[pull])
             Zt_inv -= np.outer(left, left) / (1 + grad[pull].dot(Zt_inv).dot(grad[pull]))
             regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
