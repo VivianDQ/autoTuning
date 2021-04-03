@@ -33,6 +33,7 @@ parser.add_argument('-algo', '--algo', type=str, default = 'glmucb', help = 'can
 parser.add_argument('-model', '--model', type=str, default = 'logistic', help = 'linear or logistic')
 parser.add_argument('-k', '--k', type=int, default = 32, help = 'number of arms')
 parser.add_argument('-max_rate', '--max_rate', type=float, default = -1, help = 'max explore rate')
+parser.add_argument('-delta', '--delta', type=float, default = 0.1, help = 'error prob')
 parser.add_argument('-data', '--data', type=str, default = 'covtype', help = 'can be netflix or movielens')
 parser.add_argument('-lamda', '--lamda', type=float, default = 1, help = 'lambda, regularization parameter')
 args = parser.parse_args()
@@ -98,11 +99,11 @@ reg_op = np.zeros(T)
 reg_auto_3layer = np.zeros(T)
 
 min_rate = 0
-max_rate = sigma*math.sqrt( d*math.log((T/lamda+1)/delta) ) + math.sqrt(lamda) + explore_interval_length
+# max_rate = sigma*math.sqrt( d*math.log((T/lamda+1)/delta) ) + math.sqrt(lamda) + explore_interval_length
 if args.max_rate != -1:
     max_rate = args.max_rate
-J = np.arange(min_rate, max_rate, explore_interval_length)
-lamdas = np.arange(0.1, 1.1, 0.1)
+# J = np.arange(min_rate, max_rate, explore_interval_length)
+# lamdas = np.arange(0.1, 1.1, 0.1)
 print("candidate set {}".format(J))
 
 methods = {
@@ -119,7 +120,10 @@ for i in range(rep):
         bandit = covtype(rewards, features, T, d)
     else:
         bandit = covtype_random_feature(rewards, bandit_data, T, d)
-        bandit.build_bandit()
+        bandit.build_bandit()    
+    max_rate = sigma*math.sqrt( d*math.log((T*bandit.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)*bandit.max_norm + explore_interval_length
+    J = np.arange(min_rate, max_rate, explore_interval_length)
+    if i==0: print("candidate set {}".format(J))
     algo_class = UCB_GLM(bandit, T)
     
     fcts = {
