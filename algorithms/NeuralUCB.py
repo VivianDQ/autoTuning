@@ -58,7 +58,6 @@ class NeuralUCB:
             dev = "cuda:0" 
         else:
             dev = "cpu"
-        print(dev)
         device = torch.device(dev)    
         net = net.to(device)
         
@@ -101,7 +100,6 @@ class NeuralUCB:
         W_L = w_l + [-x for x in w_l]
         tensor_W = torch.Tensor(W)
         tensor_Wl = torch.Tensor(W_L)
-        
 
         X = []
         Y = []
