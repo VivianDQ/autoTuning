@@ -54,6 +54,13 @@ class NeuralUCB:
         my_dataloader = torch.utils.data.DataLoader(my_dataset, batch_size = 50) 
         net = Net(m)
         
+        if torch.cuda.is_available():
+            dev = "cuda:0" 
+        else:
+            dev = "cpu"
+        device = torch.device(dev)    
+        net = net.to(device)
+        
         net.fc1.weight = torch.nn.Parameter(W)
         net.fc2.weight = torch.nn.Parameter(Wl)
         criterion = nn.MSELoss()
