@@ -98,10 +98,15 @@ for i in range(rep):
             context = data_generator.movie
         bandit = context(K, T, d, sigma, true_theta = theta, fv=fv)
     elif 'glm' in algo:
-        theta = np.random.uniform(-1, 1, d)
-        fv = np.random.uniform(-1, 1, (T, K, d))
-        context_logistic = data_generator.context_logistic
-        bandit = context_logistic(K, -1, 1, T, d, sigma, true_theta = theta, fv=fv)
+        if datatype == 'simulations':
+            theta = np.random.uniform(lb, ub, d)
+            fv = np.random.uniform(lb, ub, (T, K, d))
+            context_logistic = data_generator.context_logistic
+            bandit = context_logistic(K, lb, ub, T, d, sigma, true_theta = theta, fv=fv)
+        elif datatype in ['movielens', 'netflix']:
+            context_logistic = data_generator.movie_logistic
+            theta = thetas[i, :]
+            bandit = context_logistic(K, T, d, sigma, true_theta = theta, fv=fv)
     bandit.build_bandit()
     
     max_rate = sigma*math.sqrt( d*math.log((T*bandit.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)*bandit.max_norm + explore_interval_length
