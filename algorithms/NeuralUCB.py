@@ -77,7 +77,7 @@ class NeuralUCB:
                 optimizer.step()
         return net
         
-    def neuralucb(self, gamma_t = 1, eta = 0.1, m = 20, lamda = 1, optimize = 'sgd'): # or optimize = 'adagrad'
+    def neuralucb_theoretical_explore(self, gamma_t = 1, eta = 0.1, m = 20, lamda = 1, optimize = 'sgd'): # or optimize = 'adagrad'
         T = self.T
         K = self.data.K
         d = self.data.d
