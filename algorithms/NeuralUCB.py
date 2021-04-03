@@ -73,7 +73,7 @@ class NeuralUCB:
             for i, data in enumerate(my_dataloader, 0):
                 # get the inputs; data is a list of [inputs, labels]
                 x, y = data
-
+                x, y = x.to(device), y.to(device)
                 # zero the parameter gradients
                 optimizer.zero_grad()
 
