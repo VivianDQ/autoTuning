@@ -58,7 +58,7 @@ class context_nn:
         return np.random.normal(self.reward[t][i], self.sigma)
     
 class context_logistic:
-    def __init__(self, K, lb_fv, ub_fv, T, d, sigma true_theta, fv = None):
+    def __init__(self, K, lb_fv, ub_fv, T, d, sigma, true_theta, fv = None):
         if fv is None:
             fv = np.random.uniform(lb_fv, ub_fv, (T, K, d))
         self.K = K  
