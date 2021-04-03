@@ -8,7 +8,7 @@ class LinUCB:
         self.data = class_context
         self.T = T
         self.d = self.data.d
-
+        
     def linucb_theoretical_explore(self, lamda=1, delta=0.1):
         T = self.T
         d = self.data.d

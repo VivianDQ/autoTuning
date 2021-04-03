@@ -74,14 +74,11 @@ reg_op = np.zeros(T)
 reg_auto_3layer = np.zeros(T)
 
 min_rate = 0
-max_rate = sigma*math.sqrt( d*math.log((T/lamda+1)/delta) ) + math.sqrt(lamda) + explore_interval_length
 if args.max_rate != -1:
     max_rate = args.max_rate
 J = np.arange(min_rate, max_rate, explore_interval_length)
 lamdas = np.arange(0.1, 1.1, 0.1)
-print("candidate set {}".format(J))
 
-grid = np.zeros((len(J),T))
 methods = {
     'theory': '_theoretical_explore',
     'auto': '_auto',
@@ -104,8 +101,12 @@ for i in range(rep):
         theta = np.random.uniform(lb, ub, d)
         fv = np.random.uniform(lb, ub, (T, K, d))
         context_logistic = data_generator.context_logistic
-        bandit = context_logistic(K, lb, ub, T, d, sigma, true_theta = theta, fv=fv)
+        bandit = context_logistic(K, -1, 1, T, d, sigma, true_theta = theta, fv=fv)
     bandit.build_bandit()
+    
+    max_rate = sigma*math.sqrt( d*math.log((T*bandit.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
+    J = np.arange(min_rate, max_rate, explore_interval_length)
+    if i==0: print("candidate set {}".format(J))
     
     if algo == 'linucb':
         algo_class = LinUCB(bandit, T)
