@@ -116,7 +116,7 @@ class NeuralUCB:
             Y.append(observe_r)
             X.append(feature[pull])
             if t%50 == 49:
-                net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize, eta)
+                net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize, eta = eta)
                 w1 = np.array(net.state_dict()['fc1.weight'])
                 w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
                 grad[pull] = net.grad(feature[arm], w1, w2, m)
@@ -179,7 +179,7 @@ class NeuralUCB:
             Y.append(observe_r)
             X.append(feature[pull])
             if t%50 == 49:
-                net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize)
+                net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize, eta = eta)
                 w1 = np.array(net.state_dict()['fc1.weight'])
                 w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
                 grad[pull] = net.grad(feature[arm], w1, w2, m)
@@ -251,7 +251,7 @@ class NeuralUCB:
             Y.append(observe_r)
             X.append(feature[pull])
             if t%50 == 49:
-                net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize, eta)
+                net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize, eta = eta)
                 w1 = np.array(net.state_dict()['fc1.weight'])
                 w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
                 grad[pull] = net.grad(feature[arm], w1, w2, m)
@@ -316,7 +316,7 @@ class NeuralUCB:
             Y.append(observe_r)
             X.append(feature[pull])
             if t%50 == 49:
-                net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize, eta)
+                net = self.train(X, Y, tensor_W, tensor_Wl, 50, m, optimize = optimize, eta = eta)
                 w1 = np.array(net.state_dict()['fc1.weight'])
                 w2 = np.array(net.state_dict()['fc2.weight']).reshape((m,1))
                 grad[pull] = net.grad(feature[arm], w1, w2, m)
