@@ -58,7 +58,7 @@ class context_nn:
         return np.random.normal(self.reward[t][i], self.sigma)
     
 class context_logistic:
-    def __init__(self, K, lb_fv, ub_fv, T, d, true_theta, fv = None):
+    def __init__(self, K, lb_fv, ub_fv, T, d, sigma true_theta, fv = None):
         if fv is None:
             fv = np.random.uniform(lb_fv, ub_fv, (T, K, d))
         self.K = K  
@@ -71,6 +71,7 @@ class context_logistic:
         self.optimal = [None] * self.T
         self.theta = true_theta
         self.max_norm = math.sqrt(d*self.ub**2)
+        self.sigma = sigma
         
     def logistic(self, x):
         return 1/(1+np.exp(-x))
