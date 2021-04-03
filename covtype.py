@@ -66,27 +66,27 @@ if not os.path.isfile('data/rewards_covtype10.txt') or not os.path.isfile('data/
 print('data processing done')
 
 if d == 10:
-    with open('../data/rewards_covtype10.txt', 'rb') as f:
+    with open('data/rewards_covtype10.txt', 'rb') as f:
         rewards = pickle.load(f)
-    with open('../data/features_covtype10.txt', 'rb') as f:
+    with open('data/features_covtype10.txt', 'rb') as f:
         features = pickle.load(f)
-    with open('../data/X_covtype10.txt', 'rb') as f:
+    with open('data/X_covtype10.txt', 'rb') as f:
         X = pickle.load(f)
-    with open('../data/y_covtype10.txt', 'rb') as f:
+    with open('data/y_covtype10.txt', 'rb') as f:
         y = pickle.load(f)
-    with open('../data/idx_covtype10.txt', 'rb') as f:
+    with open('data/idx_covtype10.txt', 'rb') as f:
         idx = pickle.load(f)
     bandit_data = (X, y, idx)
     d = X.shape[1]
     print('d {}, K {}, T {}'.format(d,K,T))
 if d == 55:
-    with open('../data/rewards_covtype55.txt', 'rb') as f:
+    with open('data/rewards_covtype55.txt', 'rb') as f:
         rewards = pickle.load(f)
-    with open('../data/X_covtype55.txt', 'rb') as f:
+    with open('data/X_covtype55.txt', 'rb') as f:
         X = pickle.load(f)
-    with open('../data/y_covtype55.txt', 'rb') as f:
+    with open('data/y_covtype55.txt', 'rb') as f:
         y = pickle.load(f)
-    with open('../data/idx_covtype55.txt', 'rb') as f:
+    with open('data/idx_covtype55.txt', 'rb') as f:
         idx = pickle.load(f)
     bandit_data = (X, y, idx)
     d = X.shape[1]
