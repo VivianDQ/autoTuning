@@ -7,11 +7,9 @@ import time
 import gzip
 import pickle
 
-from data_generator import *
-from LinUCB import *
-from LinTS import *
-from UCB_GLM import *
-from AutoTuning import *
+from algorithms.data_generator import *
+from algorithms.UCB_GLM import *
+from algorithms.AutoTuning import *
 from get_covtype_data import *
 
 import warnings
