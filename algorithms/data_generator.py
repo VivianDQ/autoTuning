@@ -28,6 +28,34 @@ class context:
     def random_sample(self, t, i):
         return np.random.normal(self.reward[t][i], self.sigma)
     
+class context_nn:
+    def __init__(self, K, T, d, sigma, true_theta, fv = None):
+        self.ub = 1/math.sqrt(d)
+        self.lb = -1/math.sqrt(d)
+        if fv is None:
+            fv = np.random.uniform(self.lb, self.ub, (T, K, d))
+        self.K = K  
+        self.d = d
+        self.T = T
+        self.fv = fv
+        self.reward = [None] * self.T
+        self.optimal = [None] * self.T
+        self.theta = true_theta
+        self.max_norm = 1
+        self.sigma = sigma
+    
+    def model(self, x):
+        return math.cos(3*x)
+    
+    def build_bandit(self):
+        for t in range(self.T):
+            self.reward[t] = np.array([self.model(self.fv[t][i].dot(self.theta)) for i in range(self.K)])
+            # make sure all rewards are within [0,1]
+            # self.reward[t] = (self.reward[t] +1) / 2 # since x^T \theta lies in [-1,1]
+            self.optimal[t] = max(self.reward[t])
+            
+    def random_sample(self, t, i):
+        return np.random.normal(self.reward[t][i], self.sigma)
     
 class context_logistic:
     def __init__(self, K, lb_fv, ub_fv, T, d, true_theta, fv = None):
