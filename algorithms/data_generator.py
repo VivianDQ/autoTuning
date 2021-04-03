@@ -118,6 +118,7 @@ class covtype:
         self.max_norm = max([np.linalg.norm(fea) for fea in fv])
         self.reward = [reward for t in range(self.T)]
         self.optimal = [max(reward) for t in range(self.T)]  
+        self.sigma = 0.5
     def random_sample(self, t, i):
         return np.random.binomial(1, self.reward[t][i])
     
