@@ -177,7 +177,7 @@ class UCB_GLM:
             y = np.concatenate((y, [observe_r]), axis = 0)
             X = np.concatenate((X, [feature[pull]]), axis = 0)
             regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
-            B += np.outer(feature[pull], feature[pull])
+            xxt += np.outer(feature[pull], feature[pull])
         if y[0] == y[1]:
             y[1] = 1-y[0]
         # random pull in the first two rounds to make sure y[0] != y[1]
