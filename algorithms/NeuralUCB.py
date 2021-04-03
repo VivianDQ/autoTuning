@@ -58,6 +58,7 @@ class NeuralUCB:
             dev = "cuda:0" 
         else:
             dev = "cpu"
+        print(dev)
         device = torch.device(dev)    
         net = net.to(device)
         
@@ -237,7 +238,7 @@ class NeuralUCB:
         index = np.random.choice(Kexp)
         explore = explore_rates[index]
         
-        Klam = len(lamdas)
+        Klam = len(etas)
         loglamw = np.zeros(Klam)
         plam = np.ones(Klam) / Klam
         gamma_lam = min(1, math.sqrt( Klam*math.log(Klam) / ( (np.exp(1)-1) * T ) ) )
