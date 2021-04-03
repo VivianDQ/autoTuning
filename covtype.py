@@ -60,10 +60,10 @@ if not os.path.exists('results/' + datatype + '/' + algo + '/'):
 path = 'results/' + datatype + '/' + algo + '/'
 
 # extract, centeralize, standardize and cluster cover type data
-if not os.path.isfile('../data/rewards_covtype10.txt') or not os.path.isfile('../data/features_covtype10.txt') or not os.path.isfile('../data/X_covtype10.txt') or not os.path.isfile('../data/y_covtype10.txt') or not os.path.isfile('../data/idx_covtype10.txt'):
+if not os.path.isfile('data/rewards_covtype10.txt') or not os.path.isfile('data/features_covtype10.txt') or not os.path.isfile('data/X_covtype10.txt') or not os.path.isfile('data/y_covtype10.txt') or not os.path.isfile('data/idx_covtype10.txt'):
     get_covtype_data(10, center = 1)
-if not os.path.isfile('../data/rewards_covtype55.txt') or not os.path.isfile('../data/X_covtype55.txt') or not os.path.isfile('../data/y_covtype55.txt') or not os.path.isfile('../data/idx_covtype55.txt'):
-    get_covtype_data(55, center = 0)
+# if not os.path.isfile('data/rewards_covtype55.txt') or not os.path.isfile('data/X_covtype55.txt') or not os.path.isfile('data/y_covtype55.txt') or not os.path.isfile('data/idx_covtype55.txt'):
+#     get_covtype_data(55, center = 0)
 print('data processing done')
 
 if d == 10:
