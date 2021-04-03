@@ -93,6 +93,8 @@ class covtype_random_feature:
         self.optimal = [max(reward) for t in range(self.T)]
         self.data = data
         self.y = []
+        self.sigma = 0.5
+        self.max_norm = float('-Inf')
         
     def logistic(self, x):
         return 1/(1+np.exp(-x))
@@ -108,6 +110,7 @@ class covtype_random_feature:
                 tmp[i] = self.data[0][data_idx]
                 tmpy[i] = self.data[1][data_idx]
                 tmpr[i] = self.logistic(tmp[i].dot(theta))
+                self.max_norm = max(self.max_norm, np.linalg.norm(tmp[i]))
             self.fv.append(np.array(tmp))
             self.y.append(tmpy)
             self.reward[t] = tmpr
