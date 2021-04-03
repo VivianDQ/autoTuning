@@ -34,7 +34,7 @@ parser.add_argument('-max_rate', '--max_rate', type=float, default = -1, help = 
 parser.add_argument('-delta', '--delta', type=float, default = 0.1, help = 'error prob')
 parser.add_argument('-data', '--data', type=str, default = 'covtype', help = 'can be netflix or movielens')
 parser.add_argument('-lamda', '--lamda', type=float, default = 1, help = 'lambda, regularization parameter')
-parser.add_argument('-sigma', '--sigma', type=float, default = 0.01, help = 'sub gaussian para')
+parser.add_argument('-sigma', '--sigma', type=float, default = 0.5, help = 'sub gaussian para')
 args = parser.parse_args()
 
 explore_interval_length = args.split
