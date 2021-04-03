@@ -34,7 +34,7 @@ class UCB_GLM:
         # random pull in the first two rounds to make sure y[0] != y[1]
         B_inv = np.linalg.inv(B)
         for t in range(2, T):
-            explore = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
+            explore = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda) * self.data.max_norm
             feature = self.data.fv[t]
             K = len(feature)
             ucb_idx = [0]*K
