@@ -25,6 +25,7 @@ parser.add_argument('-data', '--data', type=str, default = 'simulations', help =
 parser.add_argument('-lamda', '--lamda', type=float, default = 1, help = 'lambda, regularization parameter')
 parser.add_argument('-delta', '--delta', type=float, default = 0.1, help = 'error probability')
 parser.add_argument('-sigma', '--sigma', type=float, default = 0.01, help = 'sub gaussian parameter')
+parser.add_argument('-tune', '--tune', type=str, default = 'explore', help = 'explore or lambda')
 args = parser.parse_args()
 
 
@@ -39,6 +40,7 @@ lamda = args.lamda
 delta = args.delta
 datatype = args.data
 sigma = args.sigma
+tune = args.tune
 
 if not os.path.exists('results/'):
     os.mkdir('results/')
@@ -128,7 +130,6 @@ for i in range(rep):
     reg_op += fcts['op'](J, lamda)
     reg_auto += fcts['auto'](J, lamda)
     reg_auto_3layer += fcts['auto_3layer'](J, lamdas)
-    
     
     print("theory {}, auto {}, op {}, auto_3layer {}".format(
         reg_theory[-1], reg_auto[-1], reg_op[-1], reg_auto_3layer[-1]))
