@@ -114,7 +114,7 @@ for i in range(rep):
     if 'glm' in algo and datatype == 'simulations':
         max_rate = sigma*math.sqrt( d*math.log((T*bandit.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda) + explore_interval_length
     J = np.arange(min_rate, max_rate, explore_interval_length)
-    if i==0: print("candidate set {}".format(J))
+    if i==0: print("max candidate {}".format(J[-1]))
     
     if algo == 'linucb':
         algo_class = LinUCB(bandit, T)
