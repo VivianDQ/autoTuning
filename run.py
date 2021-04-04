@@ -25,9 +25,8 @@ parser.add_argument('-data', '--data', type=str, default = 'simulations', help =
 parser.add_argument('-lamda', '--lamda', type=float, default = 1, help = 'lambda, regularization parameter')
 parser.add_argument('-delta', '--delta', type=float, default = 0.1, help = 'error probability')
 parser.add_argument('-sigma', '--sigma', type=float, default = 0.01, help = 'sub gaussian parameter')
-parser.add_argument('-tune', '--tune', type=str, default = 'explore', help = 'explore or lambda')
+parser.add_argument('-lamdas', '--lamdas', type=list, default = [0.1,0.5,1], help = 'lambdas')
 args = parser.parse_args()
-
 
 explore_interval_length = args.split
 T = args.t
@@ -40,7 +39,7 @@ lamda = args.lamda
 delta = args.delta
 datatype = args.data
 sigma = args.sigma
-tune = args.tune
+lamdas = args.lamdas
 
 if not os.path.exists('results/'):
     os.mkdir('results/')
@@ -79,7 +78,7 @@ min_rate = 0
 if args.max_rate != -1:
     max_rate = args.max_rate
 # J = np.arange(min_rate, max_rate, explore_interval_length)
-lamdas = np.arange(0.1, 1.1, 0.1)
+# lamdas = np.arange(0.1, 1.1, 0.1)
 
 methods = {
     'theory': '_theoretical_explore',
@@ -102,9 +101,9 @@ for i in range(rep):
     elif 'glm' in algo:
         if datatype == 'simulations':
             theta = np.random.uniform(lb, ub, d)
-            fv = np.random.uniform(lb, ub, (T, K, d))
+            fv = np.random.uniform(-1, 1, (T, K, d))
             context_logistic = data_generator.context_logistic
-            bandit = context_logistic(K, lb, ub, T, d, sigma, true_theta = theta, fv=fv)
+            bandit = context_logistic(K, -1, 1, T, d, sigma, true_theta = theta, fv=fv)
         elif datatype in ['movielens', 'netflix']:
             context_logistic = data_generator.movie_logistic
             theta = thetas[i, :]
@@ -112,6 +111,8 @@ for i in range(rep):
     bandit.build_bandit()
     
     max_rate = sigma*math.sqrt( d*math.log((T*bandit.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)*bandit.max_norm + explore_interval_length
+    if 'glm' in algo and datatype == 'simulations':
+        max_rate = sigma*math.sqrt( d*math.log((T*bandit.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda) + explore_interval_length
     J = np.arange(min_rate, max_rate, explore_interval_length)
     if i==0: print("candidate set {}".format(J))
     
