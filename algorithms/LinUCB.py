@@ -162,6 +162,12 @@ class LinUCB:
                 ucb_idx[arm] = feature[arm].dot(theta_hat) + explore * math.sqrt( feature[arm].T.dot(B_inv).dot(feature[arm]) )
             pull = np.argmax(ucb_idx)
             observe_r = self.data.random_sample(t,pull)
+
+            # update explore rates by auto_tuning
+            logw, p, index = auto_tuning(logw, p, observe_r, index, gamma)
+            explore = explore_rates[index]
+            loglamw, plam, index_lam = auto_tuning(loglamw, plam, observe_r, index_lam, gamma_lam)
+            lamda = lamdas[index_lam]
             
             # update linucb
             xxt += np.outer(feature[pull], feature[pull])
@@ -169,10 +175,4 @@ class LinUCB:
             xr += feature[pull] * observe_r
             theta_hat = B_inv.dot(xr)
             regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
-            
-            # update explore rates by auto_tuning
-            logw, p, index = auto_tuning(logw, p, observe_r, index, gamma)
-            explore = explore_rates[index]
-            loglamw, plam, index_lam = auto_tuning(loglamw, plam, observe_r, index_lam, gamma_lam)
-            lamda = lamdas[index_lam]
         return regret
