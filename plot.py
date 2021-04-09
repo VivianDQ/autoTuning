@@ -57,7 +57,9 @@ def draw_figure():
             data = np.loadtxt(path+key)
             T = len(data)
             plot.plot((list(range(T))), data, linestyle = plot_style[key][0], color = plot_style[key][1], linewidth = 2)
-        plot.legend((leg), loc='upper left', fontsize=12, frameon=False)
+        loca = 'best'
+        loca = 'upper left' if algo == 'glmucb' and 'movielens' in fn
+        plot.legend((leg), loc=loca, fontsize=12, frameon=False)
         plot.xlabel('Iterations')
         plot.ylabel(y_label)
         plot.title(title)
