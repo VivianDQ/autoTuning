@@ -57,7 +57,7 @@ def draw_figure():
             data = np.loadtxt(path+key)
             T = len(data)
             plot.plot((list(range(T))), data, linestyle = plot_style[key][0], color = plot_style[key][1], linewidth = 2)
-        plot.legend((leg), loc='best', fontsize=12, frameon=False)
+        plot.legend((leg), loc='upper left', fontsize=12, frameon=False)
         plot.xlabel('Iterations')
         plot.ylabel(y_label)
         plot.title(title)
