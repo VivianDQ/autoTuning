@@ -10,13 +10,13 @@ def draw_figure():
             'theory': ['--', 'orange', 'Theoretical-Explore'],
             'auto': ['-', 'red', 'Auto-Tuning'],
             'op': [':', 'blue', 'OP'],
-            'auto_3layer': ['-.', 'purple', 'Auto-Tuning-3Layer'],
+            'auto_3layer': ['-:', 'purple', 'Auto-Tuning-3Layer'],
         }
     plot_prior = {
             'auto_3layer': 1,
-            'theory': 2,
-            'op': 3,
-            'auto': 4,
+            'theory': 3,
+            'op': 4,
+            'auto': 2,
         }
     root = 'results/'
     if not os.path.exists('plots/'):
@@ -33,11 +33,11 @@ def draw_figure():
         algo = path.split('/')[-2]
         fn = path.split('/')[-3]
         if 'simulation' in fn:
-            title = 'Simulation, d={}, K={}'.format(20, 10)
+            title = 'Simulation, d={}, K={}'.format(10, 100)
         elif 'movielens' in fn:
-            title = 'Movielens, d=20, K=100'
+            title = 'Movielens, d=20, K=1000'
         elif 'netflix' in fn:
-            title = 'Netflix, d=20, K=100'
+            title = 'Netflix, d=20, K=1000'
         fig = plot.figure(figsize=(6,4))
         matplotlib.rc('font',family='serif')
         params = {'font.size': 18, 'axes.labelsize': 18, 'font.size': 18, 'legend.fontsize': 12,'xtick.labelsize': 12,'ytick.labelsize': 12, 'axes.formatter.limits':(-8,8)}
@@ -52,12 +52,12 @@ def draw_figure():
             if key not in plot_style.keys(): continue
             if algo == 'linucb': prefix = 'LinUCB-'
             elif algo == 'lints': prefix = 'LinTS-'
-            elif algo == 'glmucb': prefix = 'GLMUCB-'
+            elif algo == 'glmucb': prefix = 'UCBGLM-'
             leg += [prefix + plot_style[key][-1]]
             data = np.loadtxt(path+key)
             T = len(data)
             plot.plot((list(range(T))), data, linestyle = plot_style[key][0], color = plot_style[key][1], linewidth = 2)
-        plot.legend((leg), loc='upper left', fontsize=12, frameon=False)
+        plot.legend((leg), loc='best', fontsize=12, frameon=False)
         plot.xlabel('Iterations')
         plot.ylabel(y_label)
         plot.title(title)
