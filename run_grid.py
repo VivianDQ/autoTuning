@@ -59,7 +59,7 @@ final = {k:0 for k in J}
 for explore in J:
     reg_theory = np.zeros(T)
     for i in range(rep):
-        print(i, ": ", end = " ")
+        # print(i, ": ", end = " ")
         np.random.seed(i+1)
         if 'lin' in algo:
             theta = np.random.uniform(lb, ub, d)
@@ -83,6 +83,6 @@ for explore in J:
         fcts = getattr(algo_class, algo+'_theoretical_explore')
         reg_theory += fcts(lamda, delta, explore)
         final[explore] = reg_theory[-1]
-        
+    print("explore = {} done!".format(explore))
 final = np.array([ [k,v] for k,v in final.items() ])       
 np.savetxt(path + algo, final)   
