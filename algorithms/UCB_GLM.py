@@ -10,7 +10,7 @@ class UCB_GLM:
         self.T = T
         self.d = self.data.d
 
-    def glmucb_theoretical_explore(self, lamda=1, delta=0.1):
+    def glmucb_theoretical_explore(self, lamda=1, delta=0.1, explore = -1):
         T = self.T
         d = self.data.d
         regret = np.zeros(T)
@@ -34,7 +34,11 @@ class UCB_GLM:
         # random pull in the first two rounds to make sure y[0] != y[1]
         B_inv = np.linalg.inv(B)
         for t in range(2, T):
-            explore = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda) * self.data.max_norm
+            # when explore = -1, which is impossible, use theoretical value
+            # otherwise, it means I have specify a fixed value of explore in the code
+            # specify a fixed value for explore is only for grid serach
+            if explore == -1:
+                explore = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
             feature = self.data.fv[t]
             K = len(feature)
             ucb_idx = [0]*K
@@ -183,21 +187,14 @@ class UCB_GLM:
         # random pull in the first two rounds to make sure y[0] != y[1]
         
         # initialization for exp3 algo
-        Kexp = len(explore_rates)
+        explore_lamda = np.array(np.meshgrid(explore_rates, lamdas)).T.reshape(-1,2)
+        Kexp = len(explore_lamda)
         logw = np.zeros(Kexp)
         p = np.ones(Kexp) / Kexp
         gamma = min(1, math.sqrt( Kexp*math.log(Kexp) / ( (np.exp(1)-1) * T ) ) )
         # random initial explore rate
         index = np.random.choice(Kexp)
-        explore = explore_rates[index]
-        
-        Klam = len(lamdas)
-        loglamw = np.zeros(Klam)
-        plam = np.ones(Klam) / Klam
-        gamma_lam = min(1, math.sqrt( Klam*math.log(Klam) / ( (np.exp(1)-1) * T ) ) )
-        # random initial explore rate
-        index_lam = np.random.choice(Klam)
-        lamda = lamdas[index_lam]
+        explore, lamda = explore_lamda[index]
 
         B_inv = np.linalg.inv(xxt + lamda*np.identity(d))
         for t in range(2, T):
@@ -213,9 +210,7 @@ class UCB_GLM:
 
             # update explore rates by auto_tuning
             logw, p, index = auto_tuning(logw, p, observe_r, index, gamma)
-            explore = explore_rates[index]
-            loglamw, plam, index_lam = auto_tuning(loglamw, plam, observe_r, index_lam, gamma_lam)
-            lamda = lamdas[index_lam]
+            explore, lamda = explore_lamda[index]
             
             xxt += np.outer(feature[pull], feature[pull])
             B_inv = np.linalg.inv(xxt + lamda*np.identity(d))

@@ -9,7 +9,7 @@ class LinTS:
         self.T = T
         self.d = self.data.d
         
-    def lints_theoretical_explore(self, lamda=1, delta=0.1):
+    def lints_theoretical_explore(self, lamda=1, delta=0.1, explore = -1):
         T = self.T
         d = self.data.d
         regret = np.zeros(T)
@@ -22,7 +22,11 @@ class LinTS:
             feature = self.data.fv[t]
             K = len(feature)
             
-            explore = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)*self.data.max_norm
+            # when explore = -1, which is impossible, use theoretical value
+            # otherwise, it means I have specify a fixed value of explore in the code
+            # specify a fixed value for explore is only for grid serach
+            if explore == -1:
+                explore = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
             theta_ts = np.random.multivariate_normal(theta_hat, explore**2*B_inv)
             ucb_idx = [0]*K
             for arm in range(K):
@@ -176,6 +180,54 @@ class LinTS:
             explore = explore_rates[index]
             loglamw, plam, index_lam = auto_tuning(loglamw, plam, observe_r, index_lam, gamma_lam)
             lamda = lamdas[index_lam]
+            
+            # update linucb
+            xxt += np.outer(feature[pull], feature[pull])
+            B_inv = np.linalg.inv(xxt + lamda*np.identity(d))
+            xr += feature[pull] * observe_r
+            theta_hat = B_inv.dot(xr)
+            regret[t] = regret[t-1] + self.data.optimal[t] - self.data.reward[t][pull]
+        return regret
+    
+    def lints_auto_combined(self, explore_rates, lamdas):
+        T = self.T
+        d = self.data.d
+        regret = np.zeros(T)
+        xr = np.zeros(d)
+        theta_hat = np.zeros(d)
+        
+        # initialization for exp3 algo
+        # the possible choices for C is in J
+        # the following two lines are an ideal set of "explore_rates"
+        # min_rate, max_rate = 0, 2 * (int(math.sqrt(d * math.log(T**2+T) ) + math.sqrt(lamda)) + 1)
+        # J = np.arange(min_rate, max_rate, explore_interval_length)
+        
+        explore_lamda = np.array(np.meshgrid(explore_rates, lamdas)).T.reshape(-1,2)
+        Kexp = len(explore_lamda)
+        logw = np.zeros(Kexp)
+        p = np.ones(Kexp) / Kexp
+        gamma = min(1, math.sqrt( Kexp*math.log(Kexp) / ( (np.exp(1)-1) * T ) ) )
+        # random initial explore rate
+        index = np.random.choice(Kexp)
+        explore, lamda = explore_lamda[index]
+        
+        xxt = np.zeros((d,d))
+        B_inv = np.identity(d) / lamda
+        for t in range(T):
+            feature = self.data.fv[t]
+            K = len(feature)
+            ucb_idx = [0]*K
+            
+            theta_ts = np.random.multivariate_normal(theta_hat, explore**2*B_inv)
+            ucb_idx = [0]*K
+            for arm in range(K):
+                ucb_idx[arm] = feature[arm].dot(theta_ts)
+            pull = np.argmax(ucb_idx)
+            observe_r = self.data.random_sample(t,pull)
+
+            # update explore rates by auto_tuning
+            logw, p, index = auto_tuning(logw, p, observe_r, index, gamma)
+            explore, lamda = explore_lamda[index]
             
             # update linucb
             xxt += np.outer(feature[pull], feature[pull])

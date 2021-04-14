@@ -73,6 +73,7 @@ reg_theory = np.zeros(T)
 reg_auto = np.zeros(T)
 reg_op = np.zeros(T)
 reg_auto_3layer = np.zeros(T)
+reg_auto_combined = np.zeros(T)
 
 min_rate = 0
 if args.max_rate != -1:
@@ -85,6 +86,7 @@ methods = {
     'auto': '_auto',
     'op': '_op',
     'auto_3layer': '_auto_3layer',
+    'auto_combined': '_auto_combined',
 }
 for i in range(rep):
     print(i, ": ", end = " ")
@@ -131,15 +133,17 @@ for i in range(rep):
     reg_op += fcts['op'](J, lamda)
     reg_auto += fcts['auto'](J, lamda)
     reg_auto_3layer += fcts['auto_3layer'](J, lamdas)
+    reg_auto_combined += fcts['auto_combined'](J, lamdas)
     
-    print("theory {}, auto {}, op {}, auto_3layer {}".format(
-        reg_theory[-1], reg_auto[-1], reg_op[-1], reg_auto_3layer[-1]))
+    print("theory {}, auto {}, op {}, auto_3layer {}, auto_combined {}".format(
+        reg_theory[-1], reg_auto[-1], reg_op[-1], reg_auto_3layer[-1], reg_auto_combined[-1]))
     
     result = {
         'theory': reg_theory/(i+1),
         'auto': reg_auto/(i+1),
         'op': reg_op/(i+1),
         'auto_3layer': reg_auto_3layer/(i+1),
+        'auto_combined': reg_auto_combined/(i+1),
     }
     for k,v in result.items():
         np.savetxt(path + k, v)   

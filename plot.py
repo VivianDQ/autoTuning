@@ -11,12 +11,14 @@ def draw_figure():
             'auto': ['-', 'red', 'Auto-Tuning'],
             'op': [':', 'blue', 'OP'],
             'auto_3layer': ['-.', 'purple', 'Auto-Tuning-3Layer'],
+            'auto_combined': ['--', 'green', 'Auto-Tuning-Combined'],
         }
     plot_prior = {
             'auto_3layer': 1,
-            'theory': 3,
-            'op': 4,
+            'theory': 4,
+            'op': 5,
             'auto': 2,
+            'auto_combined': 3,
         }
     root = 'results/'
     if not os.path.exists('plots/'):
