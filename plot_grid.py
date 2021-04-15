@@ -54,7 +54,6 @@ def draw_grid():
             
         if 'lin' in path:
             dates = list(np.arange(0, 10.1, 1))
-            tmpx = list(range(T))
             xlable = np.arange(0, len(explore), 2)
             plot.xticks(xlabel, dates)
             
