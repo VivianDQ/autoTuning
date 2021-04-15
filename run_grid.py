@@ -70,13 +70,17 @@ for explore in J:
         if 'lin' in algo:
             if dist == 'uniform':
                 fv = np.random.uniform(lb, ub, (T, K, d))
+            elif dist == 'uniform_fixed':
+                fv = [np.random.uniform(lb, ub, (K, d))]*T
             elif dist == 'normal':
                 fv = truncnorm.rvs(lb, ub, size=(T,K,d))
             context = data_generator.context
             bandit = context(K, T, d, sigma, true_theta = theta, fv=fv)
         elif 'glm' in algo:
             if dist == 'uniform':
-                fv = np.random.uniform(lb, ub, (T, K, d))
+                fv = np.random.uniform(-1, 1, (T, K, d))
+            elif dist == 'uniform_fixed':
+                fv = [np.random.uniform(-1, 1, (K, d))]*T
             elif dist == 'normal':
                 fv = truncnorm.rvs(-1, 1, size=(T,K,d))
             context_logistic = data_generator.context_logistic
