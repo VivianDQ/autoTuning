@@ -32,11 +32,7 @@ def draw_grid():
         elif algo == 'lints': prefix = 'LinTS'
         elif algo == 'glmucb': prefix = 'UCBGLM'
         fn = algo + '_grid'
-        if 'simulation' in fn:
-            _, dstr, Kstr = fn.split('_')
-            d = int(dstr[1:])
-            K = int(Kstr[1:])
-            title = 'Cumulative regret v.s. Exploration rates for {}'.format(prefix)
+        title = 'Cumulative regret v.s. Exploration rates for {}'.format(prefix)
         fig = plot.figure(figsize=(6,4))
         matplotlib.rc('font',family='serif')
         params = {'font.size': 18, 'axes.labelsize': 18, 'font.size': 12, 'legend.fontsize': 12,'xtick.labelsize': 12,'ytick.labelsize': 12, 'axes.formatter.limits':(-8,8)}
