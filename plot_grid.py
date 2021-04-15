@@ -39,19 +39,17 @@ def draw_grid():
         pylab.rcParams.update(params)
 
         data = np.loadtxt(path)
-        explore = data[0,:]
+        explore = data[:,0]
         for i in range(1, data.shape[1]):
-            plot.plot(explore, data[i,:], linestyle = plot_style[i][0], color = plot_style[i][1], linewidth = 2)
-
+            plot.plot(explore, data[:,i], linestyle = plot_style[i][0], color = plot_style[i][1], linewidth = 2)
+            if data.shape[1] > 2:
+                plot.legend(plot_style[i][2], loc='best', fontsize=12, frameon=False)
         plot.xlabel('Exploration rates')
         plot.ylabel('Cumulative Regret')
-        if data.shape[1] > 2:
-            plot.legend(plot_style[i][2], loc='best', fontsize=12, frameon=False)
-            
-        if 'lin' in path:
-            dates = list(np.arange(0, 10.1, 1))
-            xlabel = np.arange(0, len(explore), 2)
-            plot.xticks(xlabel, dates)
+
+        dates = list(np.arange(0, 10.1, 1))
+        xlabel = np.arange(0, len(explore), 2)
+        plot.xticks(xlabel, dates)
             
         plot.title(title)
         fig.savefig('plots/{}.pdf'.format(fn), dpi=300, bbox_inches = "tight")
