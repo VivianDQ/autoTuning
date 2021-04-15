@@ -32,6 +32,7 @@ def draw_figure():
         for folder in folders:
             paths.append(root + c + '/' + folder + '/')
     for path in paths:
+        if 'grid' in path: continue
         algo = path.split('/')[-2]
         fn = path.split('/')[-3]
         if 'simulation' in fn:
