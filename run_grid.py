@@ -15,7 +15,7 @@ data_generator = importlib.import_module('algorithms.data_generator')
 
 parser = argparse.ArgumentParser(description='simulations')
 parser.add_argument('-split', '--split', type=float, default = 0.5, help = 'split size of candidate exploration rates')
-parser.add_argument('-rep', '--rep', type=int, default = 10, help = 'repeat times')
+parser.add_argument('-rep', '--rep', type=int, default = 5, help = 'repeat times')
 parser.add_argument('-algo', '--algo', type=str, default = 'linucb', help = 'can also be lints, glmucb')
 parser.add_argument('-model', '--model', type=str, default = 'linear', help = 'linear or logistic')
 parser.add_argument('-k', '--k', type=int, default = 100, help = 'number of arms')
