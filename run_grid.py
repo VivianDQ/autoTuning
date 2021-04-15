@@ -14,7 +14,7 @@ data_generator = importlib.import_module('algorithms.data_generator')
 
 parser = argparse.ArgumentParser(description='simulations')
 parser.add_argument('-split', '--split', type=float, default = 0.5, help = 'split size of candidate exploration rates')
-parser.add_argument('-rep', '--rep', type=int, default = 10, help = 'repeat times')
+parser.add_argument('-rep', '--rep', type=int, default = 5, help = 'repeat times')
 parser.add_argument('-algo', '--algo', type=str, default = 'linucb', help = 'can also be lints, glmucb')
 parser.add_argument('-model', '--model', type=str, default = 'linear', help = 'linear or logistic')
 parser.add_argument('-k', '--k', type=int, default = 100, help = 'number of arms')
@@ -54,7 +54,7 @@ reg_theory = np.zeros(T)
 min_rate = 0
 max_rate = args.max_rate
 J = np.arange(min_rate, max_rate + explore_interval_length, explore_interval_length)
-final = {k:0 for k in J}
+final = {k:[] for k in J}
 
 for explore in J:
     reg_theory = np.zeros(T)
@@ -82,7 +82,8 @@ for explore in J:
 
         fcts = getattr(algo_class, algo+'_theoretical_explore')
         reg_theory += fcts(lamda, delta, explore)
-        final[explore] = reg_theory[-1]
+        final[explore].append(reg_theory[-1])
     print("explore = {} done!".format(explore))
-final = np.array([ [k,v] for k,v in final.items() ])       
+    
+final = np.array([ [k] + v for k,v in final.items() ])       
 np.savetxt(path + algo, final)   
