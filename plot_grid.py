@@ -44,7 +44,7 @@ def draw_grid():
 
         data = np.loadtxt(path)
         explore = data[0,:]
-        for i in range(1, data.shape[1])
+        for i in range(1, data.shape[1]):
             plot.plot(explore, data[i,:], linestyle = plot_style[i][0], color = plot_style[i][1], linewidth = 2)
 
         plot.xlabel('Exploration rates')
