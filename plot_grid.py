@@ -6,12 +6,18 @@ import matplotlib.pyplot as plot
 from matplotlib import pylab
 
 def draw_grid():
+    '''
     plot_style = {
             1: ['--', 'orange', 'Repeat1'],
             2: ['-', 'red', 'Repeat2'],
             3: [':', 'blue', 'Repeat3'],
             4: ['-.', 'purple', 'Repeat4'],
             5: ['--', 'green', 'Repeat5'],
+    }
+    '''
+    plot_style = {
+            'normal': ['--', 'black', 'Truncated Normal'],
+            'uniform': ['-', 'red', 'Uniform'],
     }
     
     root = 'results/'
@@ -22,12 +28,12 @@ def draw_grid():
     paths = []
     for c in cat:
         if 'grid' not in c: continue
-        files = os.listdir(root+c)
-        for file in files:
-            paths.append(root + c + '/' + file)
+        folders = os.listdir(root+c)
+        for folder in folders:
+            paths.append(root + c + '/' + folder + '/')
 
     for path in paths:
-        algo = path.split('/')[-1]
+        algo = path.split('/')[-2]
         if algo == 'linucb': prefix = 'LinUCB'
         elif algo == 'lints': prefix = 'LinTS'
         elif algo == 'glmucb': prefix = 'UCBGLM'
@@ -37,20 +43,23 @@ def draw_grid():
         matplotlib.rc('font',family='serif')
         params = {'font.size': 18, 'axes.labelsize': 18, 'font.size': 12, 'legend.fontsize': 12,'xtick.labelsize': 12,'ytick.labelsize': 12, 'axes.formatter.limits':(-8,8)}
         pylab.rcParams.update(params)
-
-        data = np.loadtxt(path)
-        explore = data[:,0]
-        for i in range(1, data.shape[1]):
-            plot.plot(explore, data[:,i], linestyle = plot_style[i][0], color = plot_style[i][1], linewidth = 2)
-            if data.shape[1] > 2:
-                plot.legend(plot_style[i][2], loc='best', fontsize=12, frameon=False)
+        
+        leg = []
+        keys = os.listdir(path)
+        for key in keys:
+            if key not in plot_style: continue        
+            data = np.loadtxt(path+key)
+            explore = data[:,0]
+            plot.plot(explore, data[:,1], linestyle = plot_style[key][0], color = plot_style[key][1], linewidth = 2)
+            leg += [plot_style[key][2]]
+        plot.legend(leg, loc='best', fontsize=12, frameon=False)
         plot.xlabel('Exploration rates')
         plot.ylabel('Cumulative Regret')
 
         dates = list(np.arange(0, 10.1, 1))
-        xlabel = np.arange(0, len(explore), 2)
+        xlabel = np.arange(0, explore[-1]+0.1, 1)
         plot.xticks(xlabel, dates)
-            
+        
         plot.title(title)
         fig.savefig('plots/{}.pdf'.format(fn), dpi=300, bbox_inches = "tight")
         print('file in path {} plotted and saved as {}.pdf'.format(path, fn))
