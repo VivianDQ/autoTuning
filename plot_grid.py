@@ -54,7 +54,7 @@ def draw_grid():
             
         if 'lin' in path:
             dates = list(np.arange(0, 10.1, 1))
-            xlable = np.arange(0, len(explore), 2)
+            xlabel = np.arange(0, len(explore), 2)
             plot.xticks(xlabel, dates)
             
         plot.title(title)
