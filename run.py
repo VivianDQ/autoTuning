@@ -25,8 +25,8 @@ parser.add_argument('-data', '--data', type=str, default = 'simulations', help =
 parser.add_argument('-lamda', '--lamda', type=float, default = 1, help = 'lambda, regularization parameter')
 parser.add_argument('-delta', '--delta', type=float, default = 0.1, help = 'error probability')
 parser.add_argument('-sigma', '--sigma', type=float, default = 0.01, help = 'sub gaussian parameter')
-parser.add_argument('-lamdas', '--lamdas', type=list, default = [0.1,0.5,1], help = 'lambdas')
-parser.add_argument('-js', '--js', type=list, default = [0.01,0.1,1], help = 'lambdas')
+parser.add_argument('-lamdas', '--lamdas', nargs = '+', default = [0.1,0.5,1], help = 'lambdas')
+parser.add_argument('-js', '--js', nargs = '+', default = [0.01,0.1,1], help = 'exploration rates')
 args = parser.parse_args()
 
 explore_interval_length = args.split
