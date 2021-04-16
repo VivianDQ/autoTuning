@@ -187,6 +187,19 @@ class UCB_GLM:
         # random pull in the first two rounds to make sure y[0] != y[1]
         
         # initialization for exp3 algo
+        # the possible choices for C is in J
+        # the following two lines are an ideal set of "explore_rates"
+        # min_rate, max_rate = 0, 2 * (int(math.sqrt(d * math.log(T**2+T) ) + math.sqrt(lamda)) + 1)
+        # J = np.arange(min_rate, max_rate, explore_interval_length)
+        Kexp = len(explore_rates)
+        logw = np.zeros(Kexp)
+        p = np.ones(Kexp) / Kexp
+        gamma = min(1, math.sqrt( Kexp*math.log(Kexp) / ( (np.exp(1)-1) * T ) ) )
+        # random initial explore rate
+        index = np.random.choice(Kexp)
+        explore = explore_rates[index]
+        
+        # initialization for exp3 algo
         Klam = len(lamdas)
         loglamw = np.zeros(Klam)
         plam = np.ones(Klam) / Klam
