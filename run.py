@@ -87,8 +87,8 @@ methods = {
     'auto_3layer': '_auto_3layer',
     'auto_combined': '_auto_combined',
 }
+
 for i in range(rep):
-    print(i, ": ", end = " ")
     np.random.seed(i+1)
     if 'lin' in algo:
         if datatype == 'simulations':
@@ -110,7 +110,11 @@ for i in range(rep):
             theta = thetas[i, :]
             bandit = context_logistic(K, T, d, sigma, true_theta = theta, fv=fv)
     bandit.build_bandit()
+    if i==0:
+        theroy_explore_rate = sigma*math.sqrt( d*math.log((T*bandit.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
+        print('theoretical exploration rate is {}'.format{theory_explore_rate})
     
+    print(i, ": ", end = " ")
     if algo == 'linucb':
         algo_class = LinUCB(bandit, T)
     elif algo == 'lints':
