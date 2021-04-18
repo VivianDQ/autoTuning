@@ -16,8 +16,9 @@ def draw_grid():
     }
     '''
     plot_style = {
-            'normal': ['--', 'black', 'Truncated Normal'],
-            'uniform': ['-', 'red', 'Uniform'],
+            'normal': [':', 'orange', 'Truncated Normal'],
+            'uniform': ['-', 'red', 'Changing Features'],
+            'uniform_fixed': ['--', 'black', 'Fixed Features']
     }
     
     root = 'results/'
