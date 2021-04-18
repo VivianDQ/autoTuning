@@ -33,12 +33,16 @@ class UCB_GLM:
             y[1] = 1-y[0]
         # random pull in the first two rounds to make sure y[0] != y[1]
         B_inv = np.linalg.inv(B)
+        
+        explore_flag = explore
         for t in range(2, T):
             # when explore = -1, which is impossible, use theoretical value
             # otherwise, it means I have specify a fixed value of explore in the code
             # specify a fixed value for explore is only for grid serach
-            if explore == -1:
+            if explore_flag == -1:
                 explore = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
+            else:
+                explore = explore_flag
             feature = self.data.fv[t]
             K = len(feature)
             ucb_idx = [0]*K
