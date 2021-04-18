@@ -53,13 +53,14 @@ def draw_grid():
             explore = data[:,0]
             plot.plot(explore, data[:,1], linestyle = plot_style[key][0], color = plot_style[key][1], linewidth = 2)
             leg += [plot_style[key][2]]
+            dates = list(np.arange(0, 10.1, 1))
+            xlabel = np.arange(0, explore[-1]+0.1, 1)
+            plot.xticks(xlabel, dates)
         plot.legend(leg, loc='best', fontsize=12, frameon=False)
         plot.xlabel('Exploration rates')
         plot.ylabel('Cumulative Regret')
 
-        dates = list(np.arange(0, 10.1, 1))
-        xlabel = np.arange(0, explore[-1]+0.1, 1)
-        plot.xticks(xlabel, dates)
+        
         
         plot.title(title)
         fig.savefig('plots/{}.pdf'.format(fn), dpi=300, bbox_inches = "tight")
