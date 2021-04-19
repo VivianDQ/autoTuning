@@ -9,7 +9,7 @@ def draw_figure():
     plot_style = {
             'theory': ['-.', 'orange', '$\\bf{Theoretical-Explore}$'],
             'auto': ['-', 'black', '$\\bf{Auto}$'],
-            'op': [':', 'blue', '$\textbf{OP}$'],
+            'op': [':', 'blue', '$\\bf{OP}$'],
             'auto_3layer': ['-', 'red', '$\\bf{Auto-3Layer}$'],
             'auto_combined': ['--', 'green', '$\\bf{Auto-Combined}$'],
         }
@@ -41,6 +41,11 @@ def draw_figure():
             title = '$\\bf{Movielens for '
         elif 'netflix' in fn:
             title = '$\\bf{Netflix for '
+            
+        if algo == 'linucb': prefix = 'LinUCB}$'
+        elif algo == 'lints': prefix = 'LinTS}$'
+        elif algo == 'glmucb': prefix = 'UCBGLM}$'
+        title += prefix
         fig = plot.figure(figsize=(6,4))
         matplotlib.rc('font',family='serif')
         params = {'font.size': 18, 'axes.labelsize': 18, 'font.size': 18, 'legend.fontsize': 12,'xtick.labelsize': 12,'ytick.labelsize': 12, 'axes.formatter.limits':(-8,8)}
@@ -53,10 +58,6 @@ def draw_figure():
         y_label = '$\\bf{Cumulative Regret}$'
         for key in keys:
             if key not in plot_style.keys(): continue
-            if algo == 'linucb': prefix = 'LinUCB}$'
-            elif algo == 'lints': prefix = 'LinTS}$'
-            elif algo == 'glmucb': prefix = 'UCBGLM}$'
-            title += prefix
             leg += [plot_style[key][-1]]
             data = np.loadtxt(path+key)
             T = len(data)
