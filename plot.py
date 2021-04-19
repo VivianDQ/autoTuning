@@ -7,11 +7,11 @@ from matplotlib import pylab
 
 def draw_figure():
     plot_style = {
-            'theory': ['--', 'orange', 'Theoretical-Explore'],
-            'auto': ['-', 'red', 'Auto-Tuning'],
+            'theory': ['-.', 'orange', 'Theoretical-Explore'],
+            'auto': ['-', 'black', 'Auto'],
             'op': [':', 'blue', 'OP'],
-            'auto_3layer': ['-.', 'purple', 'Auto-Tuning-3Layer'],
-            'auto_combined': ['--', 'green', 'Auto-Tuning-Combined'],
+            'auto_3layer': ['-', 'red', 'Auto-3Layer'],
+            'auto_combined': ['--', 'green', 'Auto-Combined'],
         }
     plot_prior = {
             'auto_3layer': 1,
@@ -36,11 +36,11 @@ def draw_figure():
         algo = path.split('/')[-2]
         fn = path.split('/')[-3]
         if 'simulation' in fn:
-            title = 'Simulation, d={}, K={}'.format(10, 100)
+            title = 'Simulation'
         elif 'movielens' in fn:
-            title = 'Movielens, d=20, K=1000'
+            title = 'Movielens'
         elif 'netflix' in fn:
-            title = 'Netflix, d=20, K=1000'
+            title = 'Netflix'
         fig = plot.figure(figsize=(6,4))
         matplotlib.rc('font',family='serif')
         params = {'font.size': 18, 'axes.labelsize': 18, 'font.size': 18, 'legend.fontsize': 12,'xtick.labelsize': 12,'ytick.labelsize': 12, 'axes.formatter.limits':(-8,8)}

@@ -16,7 +16,7 @@ def draw_grid():
     }
     '''
     plot_style = {
-            'normal': [':', 'orange', 'Truncated Normal'],
+            # 'normal': [':', 'orange', 'Truncated Normal'],
             'uniform': ['-', 'red', 'Changing Features'],
             'uniform_fixed': ['--', 'black', 'Fixed Features']
     }
@@ -39,7 +39,7 @@ def draw_grid():
         elif algo == 'lints': prefix = 'LinTS'
         elif algo == 'glmucb': prefix = 'UCBGLM'
         fn = algo + '_grid'
-        title = 'Cumulative regret v.s. Exploration rates for {}'.format(prefix)
+        title = '{}'.format(prefix)
         fig = plot.figure(figsize=(6,4))
         matplotlib.rc('font',family='serif')
         params = {'font.size': 18, 'axes.labelsize': 18, 'font.size': 12, 'legend.fontsize': 12,'xtick.labelsize': 12,'ytick.labelsize': 12, 'axes.formatter.limits':(-8,8)}
@@ -57,7 +57,7 @@ def draw_grid():
             xlabel = np.arange(0, explore[-1]+0.1, 1)
             plot.xticks(xlabel, dates)
         plot.legend(leg, loc='best', fontsize=12, frameon=False)
-        plot.xlabel('Exploration rates')
+        plot.xlabel('Exploration parameters')
         plot.ylabel('Cumulative Regret')
 
         

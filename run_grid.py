@@ -78,13 +78,13 @@ for explore in J:
             bandit = context(K, T, d, sigma, true_theta = theta, fv=fv)
         elif 'glm' in algo:
             if dist == 'uniform':
-                fv = np.random.uniform(-1, 1, (T, K, d))
+                fv = np.random.uniform(lb, ub, (T, K, d))
             elif dist == 'uniform_fixed':
-                fv = [np.random.uniform(-1, 1, (K, d))]*T
+                fv = [np.random.uniform(lb, ub, (K, d))]*T
             elif dist == 'normal':
-                fv = truncnorm.rvs(-1, 1, size=(T,K,d))
+                fv = truncnorm.rvs(lb, ub, size=(T,K,d))
             context_logistic = data_generator.context_logistic
-            bandit = context_logistic(K, -1, 1, T, d, sigma, true_theta = theta, fv=fv)
+            bandit = context_logistic(K, lb, ub, T, d, sigma, true_theta = theta, fv=fv)
         bandit.build_bandit()
 
         if algo == 'linucb':
