@@ -36,11 +36,11 @@ def draw_figure():
         algo = path.split('/')[-2]
         fn = path.split('/')[-3]
         if 'simulation' in fn:
-            title = '$\\bf{Simulation for '
+            title = '$\\bf{Simulation\ for\ '
         elif 'movielens' in fn:
-            title = '$\\bf{Movielens for '
+            title = '$\\bf{Movielens\ for\ '
         elif 'netflix' in fn:
-            title = '$\\bf{Netflix for '
+            title = '$\\bf{Netflix\ for\ '
             
         if algo == 'linucb': prefix = 'LinUCB}$'
         elif algo == 'lints': prefix = 'LinTS}$'
@@ -55,7 +55,7 @@ def draw_figure():
         if 'grid_all' in keys:
             keys.remove('grid_all')
         keys = sorted(keys, key=lambda kv: plot_prior[kv])
-        y_label = '$\\bf{Cumulative Regret}$'
+        y_label = '$\\bf{Cumulative\ Regret}$'
         for key in keys:
             if key not in plot_style.keys(): continue
             leg += [plot_style[key][-1]]

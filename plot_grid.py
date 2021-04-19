@@ -17,8 +17,8 @@ def draw_grid():
     '''
     plot_style = {
             # 'normal': [':', 'orange', 'Truncated Normal'],
-            'uniform': ['-', 'red', '$\\bf{Changing Features}$'],
-            'uniform_fixed': ['--', 'black', '$\\bf{Fixed Features}$']
+            'uniform': ['-', 'red', '$\\bf{Changing\ Features}$'],
+            'uniform_fixed': ['--', 'black', '$\\bf{Fixed\ Features}$']
     }
     
     root = 'results/'
@@ -57,8 +57,8 @@ def draw_grid():
             xlabel = np.arange(0, explore[-1]+0.1, 1)
             plot.xticks(xlabel, dates)
         plot.legend(leg, loc='best', fontsize=12, frameon=False)
-        plot.xlabel('$\\bf{Exploration Parameters}$')
-        plot.ylabel('$\\bf{Cumulative Regret}$')
+        plot.xlabel('$\\bf{Exploration\ Parameters}$')
+        plot.ylabel('$\\bf{Cumulative\ Regret}$')
 
         
         
