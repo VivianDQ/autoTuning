@@ -17,8 +17,8 @@ def draw_grid():
     '''
     plot_style = {
             # 'normal': [':', 'orange', 'Truncated Normal'],
-            'uniform': ['-', 'red', '$\textbf{Changing Features}$'],
-            'uniform_fixed': ['--', 'black', '$\textbf{Fixed Features}$']
+            'uniform': ['-', 'red', '$\bf{Changing Features}$'],
+            'uniform_fixed': ['--', 'black', '$\bf{Fixed Features}$']
     }
     
     root = 'results/'
@@ -35,9 +35,9 @@ def draw_grid():
 
     for path in paths:
         algo = path.split('/')[-2]
-        if algo == 'linucb': prefix = '$\textbf{LinUCB}$'
-        elif algo == 'lints': prefix = '$\textbf{LinTS}$'
-        elif algo == 'glmucb': prefix = '$\textbf{UCB-GLM}$'
+        if algo == 'linucb': prefix = '$\bf{LinUCB}$'
+        elif algo == 'lints': prefix = '$\bf{LinTS}$'
+        elif algo == 'glmucb': prefix = '$\bf{UCB-GLM}$'
         fn = algo + '_grid'
         title = '{}'.format(prefix)
         fig = plot.figure(figsize=(6,4))
@@ -57,8 +57,8 @@ def draw_grid():
             xlabel = np.arange(0, explore[-1]+0.1, 1)
             plot.xticks(xlabel, dates)
         plot.legend(leg, loc='best', fontsize=12, frameon=False)
-        plot.xlabel('$\textbf{Exploration Parameters$')
-        plot.ylabel('$\textbf{Cumulative Regret}$')
+        plot.xlabel('$\bf{Exploration Parameters$')
+        plot.ylabel('$\bf{Cumulative Regret}$')
 
         
         
