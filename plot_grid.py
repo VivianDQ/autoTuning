@@ -17,8 +17,8 @@ def draw_grid():
     '''
     plot_style = {
             # 'normal': [':', 'orange', 'Truncated Normal'],
-            'uniform': ['-', 'red', 'Changing Features'],
-            'uniform_fixed': ['--', 'black', 'Fixed Features']
+            'uniform': ['-', 'red', '\textbf{Changing Features}'],
+            'uniform_fixed': ['--', 'black', '\textbf{Fixed Features}']
     }
     
     root = 'results/'
@@ -35,9 +35,9 @@ def draw_grid():
 
     for path in paths:
         algo = path.split('/')[-2]
-        if algo == 'linucb': prefix = 'LinUCB'
-        elif algo == 'lints': prefix = 'LinTS'
-        elif algo == 'glmucb': prefix = 'UCBGLM'
+        if algo == 'linucb': prefix = '\textbf{LinUCB}'
+        elif algo == 'lints': prefix = '\textbf{LinTS}'
+        elif algo == 'glmucb': prefix = '\textbf{UCB-GLM}'
         fn = algo + '_grid'
         title = '{}'.format(prefix)
         fig = plot.figure(figsize=(6,4))
