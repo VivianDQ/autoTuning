@@ -7,11 +7,11 @@ from matplotlib import pylab
 
 def draw_figure():
     plot_style = {
-            'theory': ['-.', 'orange', '$\textbf{Theoretical-Explore}$'],
-            'auto': ['-', 'black', '$\textbf{Auto}$'],
+            'theory': ['-.', 'orange', '$\\bf{Theoretical-Explore}$'],
+            'auto': ['-', 'black', '$\\bf{Auto}$'],
             'op': [':', 'blue', '$\textbf{OP}$'],
-            'auto_3layer': ['-', 'red', '$\textbf{Auto-3Layer}$'],
-            'auto_combined': ['--', 'green', '$\textbf{Auto-Combined}$'],
+            'auto_3layer': ['-', 'red', '$\\bf{Auto-3Layer}$'],
+            'auto_combined': ['--', 'green', '$\\bf{Auto-Combined}$'],
         }
     plot_prior = {
             'auto_3layer': 1,
@@ -36,11 +36,11 @@ def draw_figure():
         algo = path.split('/')[-2]
         fn = path.split('/')[-3]
         if 'simulation' in fn:
-            title = '$\textbf{Simulation for '
+            title = '$\\bf{Simulation for '
         elif 'movielens' in fn:
-            title = '$\textbf{Movielens for '
+            title = '$\\bf{Movielens for '
         elif 'netflix' in fn:
-            title = '$\textbf{Netflix for '
+            title = '$\\bf{Netflix for '
         fig = plot.figure(figsize=(6,4))
         matplotlib.rc('font',family='serif')
         params = {'font.size': 18, 'axes.labelsize': 18, 'font.size': 18, 'legend.fontsize': 12,'xtick.labelsize': 12,'ytick.labelsize': 12, 'axes.formatter.limits':(-8,8)}
@@ -50,7 +50,7 @@ def draw_figure():
         if 'grid_all' in keys:
             keys.remove('grid_all')
         keys = sorted(keys, key=lambda kv: plot_prior[kv])
-        y_label = '$\textbf{Cumulative Regret}$'
+        y_label = '$\\bf{Cumulative Regret}$'
         for key in keys:
             if key not in plot_style.keys(): continue
             if algo == 'linucb': prefix = 'LinUCB}$'
@@ -63,7 +63,7 @@ def draw_figure():
             plot.plot((list(range(T))), data, linestyle = plot_style[key][0], color = plot_style[key][1], linewidth = 2)
         loca = 'upper left' if algo == 'glmucb' and 'movielens' in fn else 'best'
         plot.legend((leg), loc=loca, fontsize=12, frameon=False)
-        plot.xlabel('$\textbf{Iterations}$')
+        plot.xlabel('$\\bf{Iterations}$')
         plot.ylabel(y_label)
         plot.title(title)
         fig.savefig('plots/{}_{}.pdf'.format(algo, fn), dpi=300, bbox_inches = "tight")
