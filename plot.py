@@ -8,10 +8,10 @@ from matplotlib import pylab
 def draw_figure():
     plot_style = {
             'theory': ['-.', 'orange', '$\\bf{Theoretical-Explore}$'],
-            'auto': ['-', 'black', '$\\bf{Auto}$'],
+            'auto': ['-', 'black', '$\\bf{TL}$'],
             'op': [':', 'blue', '$\\bf{OP}$'],
-            'auto_3layer': ['-', 'red', '$\\bf{Auto-3Layer}$'],
-            'auto_combined': ['--', 'green', '$\\bf{Auto-Combined}$'],
+            'auto_3layer': ['-', 'red', '$\\bf{Syndicated}$'],
+            'auto_combined': ['--', 'green', '$\\bf{TL-Combined}$'],
         }
     plot_prior = {
             'auto_3layer': 1,
