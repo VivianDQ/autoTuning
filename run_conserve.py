@@ -133,9 +133,9 @@ for i in range(rep):
 
     fcts = getattr(algo_class, algo+'_theoretical_explore')
     theory += fcts(lamda, delta, -1)
-final['theory'] = theory / rep
+final['theory'] = theory[-1] / rep
 
 print(final)
     
 # final = np.array([ [k] + v for k,v in final.items() ])       
-np.savetxt(path + dist, final)   
+# np.savetxt(path + dist, final)   
