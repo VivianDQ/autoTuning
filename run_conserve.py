@@ -62,7 +62,7 @@ J = np.arange(min_rate, max_rate + explore_interval_length, explore_interval_len
 final = {k:[] for k in J}
 
 for explore in J:
-    reg_theory = np.zeros(T)
+    reg_theory = np.zeros(rep)
     for i in range(rep):
         # print(i, ": ", end = " ")
         np.random.seed(i+1)
@@ -95,11 +95,11 @@ for explore in J:
             algo_class = UCB_GLM(bandit, T)
 
         fcts = getattr(algo_class, algo+'_theoretical_explore')
-        reg_theory += fcts(lamda, delta, explore)
-    final[explore] = reg_theory[-1]/rep
+        reg_theory[i] = fcts(lamda, delta, explore)[-1]
+    final[explore] = [np.mean(reg_theory), np.std(reg_theory)]
     print("explore = {} done!".format(explore))
     
-theory = np.zeros(T)
+theory = np.zeros(rep)
 for i in range(rep):
     # print(i, ": ", end = " ")
     np.random.seed(i+1)
@@ -132,10 +132,13 @@ for i in range(rep):
         algo_class = UCB_GLM(bandit, T)
 
     fcts = getattr(algo_class, algo+'_theoretical_explore')
-    theory += fcts(lamda, delta, -1)
-final['theory'] = theory[-1] / rep
+    theory[i] = fcts(lamda, delta, -1)[-1]
+final['theory'] = [np.mean(theory), np.std(theory)]
 
-print(final)
+
+print('parameter: mean reg, std reg')
+for k,v in final.items():
+    print(k, v[0], v[1])
     
 # final = np.array([ [k] + v for k,v in final.items() ])       
 # np.savetxt(path + dist, final)   
