@@ -61,7 +61,7 @@ class SGD_TS:
                 # update explore rates by auto_tuning
                 for k, v in logw.items():             
                     logw[k], p[k], index[k] = auto_tuning(logw[k], p[k], reward_exp3/tau, index[k], gamma[k])
-                    selected_paras[k] = paras[index[k]]
+                    selected_paras[k] = paras[k][index[k]]
                 # use the hyper-para selected by exp3
                 if 'eta0' in paras.keys(): eta0 = selected_paras['eta0']
                 if 'alpha1' in paras.keys(): 
