@@ -39,6 +39,7 @@ class SGD_TS:
         n = { k: len(paras[k]) for k in paras.keys() }
         logw = { k: np.zeros(len(paras[k])) for k in paras.keys() }
         p = {k:logw[k]/n[k] for k in logw.keys()}
+        print(n, logw, p)
         gamma = { k: min(1, math.sqrt( n[k]*math.log(n[k]) / ( (np.exp(1)-1) * T ) ) ) for k in logw.keys() }
         index = { k:np.random.choice(n[k]) for k in logw.keys()} 
         selected_paras = {} #  k:paras[k][index[k]] for k in paras.keys() }
