@@ -77,11 +77,10 @@ if datatype == 'movielens' or datatype == 'netflix':
 ub = 1/math.sqrt(d)
 lb = -1/math.sqrt(d)
 
-reg_theory = np.zeros(T)
+reg_syndicated = np.zeros(T)
 reg_auto = np.zeros(T)
 reg_op = np.zeros(T)
-reg_auto_3layer = np.zeros(T)
-reg_auto_combined = np.zeros(T)
+reg_combined = np.zeros(T)
 
 methods = {
     'auto': '_auto',
