@@ -149,7 +149,7 @@ class SGD_TS:
                 j = t//tau
                 # update explore rates by auto_tuning          
                 logw, p, index = auto_tuning(logw, p, reward_exp3/tau, index, gamma)
-                for i in len(keys):
+                for i in range(len(keys)):
                     selected_paras[keys[i]] = list(combinations[index])[i]
                 
                 # use the hyper-para selected by exp3
@@ -240,7 +240,7 @@ class SGD_TS:
                 j = t//tau
                 # update explore rates by auto_tuning          
                 s, f, index = op_tuning(s, f, reward_exp3, index)
-                for i in len(keys):
+                for i in range(len(keys)):
                     selected_paras[keys[i]] = list(combinations[index])[i]
                 
                 # use the hyper-para selected by exp3
