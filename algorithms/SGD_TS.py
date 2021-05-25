@@ -14,11 +14,11 @@ class SGD_TS:
     def grad(self, x, y, theta, lamda = 0):
         return x*( -y + 1/(1+np.exp(-x.dot(theta))) ) + 2*lamda*theta
     
-    def sgdts_auto(self, paras): # paras should be a dictionary of hyper-paras to be tuned 
+    def sgdts_auto(self, C, paras): # paras should be a dictionary of hyper-paras to be tuned 
         #eta0s, g1s, g2s, lamdas):
         T = self.T
         d = self.data.d
-        tau = max(math.log(T), d)
+        tau = C*max(math.log(T), d)
         
         regret = np.zeros(self.T)
         y = np.array([])
@@ -95,11 +95,11 @@ class SGD_TS:
             reward_exp3 += observe_r    
         return regret
     
-    def sgdts_combined(self, paras): # paras should be a dictionary of hyper-paras to be tuned 
+    def sgdts_combined(self, C, paras): # paras should be a dictionary of hyper-paras to be tuned 
         #eta0s, g1s, g2s, lamdas):
         T = self.T
         d = self.data.d
-        tau = max(math.log(T), d)
+        tau = C*max(math.log(T), d)
         
         regret = np.zeros(self.T)
         y = np.array([])
@@ -187,11 +187,11 @@ class SGD_TS:
             
         return regret
     
-    def sgdts_op(self, paras): # paras should be a dictionary of hyper-paras to be tuned 
+    def sgdts_op(self, C, paras): # paras should be a dictionary of hyper-paras to be tuned 
         #eta0s, g1s, g2s, lamdas):
         T = self.T
         d = self.data.d
-        tau = max(math.log(T), d)
+        tau = C*max(math.log(T), d)
         
         regret = np.zeros(self.T)
         y = np.array([])

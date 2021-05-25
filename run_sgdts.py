@@ -24,6 +24,7 @@ parser.add_argument('-delta', '--delta', type=float, default = 0.1, help = 'erro
 parser.add_argument('-sigma', '--sigma', type=float, default = 0.5, help = 'sub gaussian parameter')
 parser.add_argument('-js', '--js', nargs = '+', default = [0,0.01,0.1,1,10], help = 'exploration rates')
 parser.add_argument('-etas', '--etas', nargs = '+', default = [0.01, 0.1, 1, 10], help = 'exploration rates')
+parser.add_argument('-tau', '--tau', type=int, default = 1, help = 'tau')
 args = parser.parse_args()
 
 T = args.t
@@ -31,6 +32,7 @@ d = args.d
 rep = args.rep
 algo = args.algo
 model = args.model
+tau = args.tau
 K = args.k
 delta = args.delta
 datatype = args.data
@@ -128,10 +130,10 @@ for i in range(rep):
         k: getattr(algo_class, algo+methods[k]) 
         for k,v in methods.items()
     }
-    reg_op += fcts['op']( {'eta0': paras['eta0']} )
-    reg_auto += fcts['auto']({'eta0': paras['eta0']})
-    reg_syndicated += fcts['auto'](paras)
-    reg_combined += fcts['combined'](paras)
+    reg_op += fcts['op']( tau, {'eta0': paras['eta0']} )
+    reg_auto += fcts['auto']( tau, {'eta0': paras['eta0']} )
+    reg_syndicated += fcts['auto'](tau, paras)
+    reg_combined += fcts['combined'](tau, paras)
     
     print("op {}, tl {}, syn {}, combined {}".format(
         reg_op[-1], reg_auto[-1], reg_syndicated[-1], reg_combined[-1]))
