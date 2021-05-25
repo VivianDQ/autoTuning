@@ -132,8 +132,8 @@ for i in range(rep):
     }
     
     reg_auto += fcts['auto']( tau, {'eta0': paras['eta0']} )
-    reg_syndicated += fcts['auto'](tau, paras)
     reg_combined += fcts['combined'](tau, paras)
+    reg_syndicated += fcts['auto'](tau, paras)
     reg_op += fcts['op']( tau, {'eta0': paras['eta0']} )
     
     print("op {}, tl {}, syn {}, combined {}".format(
