@@ -6,9 +6,7 @@ import argparse
 import importlib
 
 # from algorithms.data_generator import *
-from algorithms.LinUCB import *
-from algorithms.LinTS import *
-from algorithms.UCB_GLM import *
+from algorithms.SGD_TS import *
 from algorithms.AutoTuning import *
 data_generator = importlib.import_module('algorithms.data_generator')
 
