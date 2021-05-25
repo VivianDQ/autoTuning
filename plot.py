@@ -45,6 +45,7 @@ def draw_figure():
         if algo == 'linucb': prefix = 'LinUCB}$'
         elif algo == 'lints': prefix = 'LinTS}$'
         elif algo == 'glmucb': prefix = 'UCB-GLM}$'
+        elif algo == 'sgdts': prefix = 'SGTD-TS}$'
         title += prefix
         fig = plot.figure(figsize=(6,4))
         matplotlib.rc('font',family='serif')
