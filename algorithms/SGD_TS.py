@@ -69,7 +69,7 @@ class SGD_TS:
                     g1 = selected_paras['alpha1']
                 else:
                     # theoretical value same as UCB-GLM
-                    g1 = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
+                    g1 = self.data.sigma*math.sqrt( d/2*math.log(1+2*j*tau/d) + 2*math.log(T)) 
                 if 'alpha2' in paras.keys(): 
                     g2 = selected_paras['alpha2']
                 else:
@@ -159,7 +159,7 @@ class SGD_TS:
                     g1 = selected_paras['alpha1']
                 else:
                     # theoretical value same as UCB-GLM
-                    g1 = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
+                    g1 = self.data.sigma*math.sqrt( d/2*math.log(1+2*j*tau/d) + 2*math.log(T)) 
                 if 'alpha2' in paras.keys(): 
                     g2 = selected_paras['alpha2']
                 else:
@@ -250,7 +250,7 @@ class SGD_TS:
                     g1 = selected_paras['alpha1']
                 else:
                     # theoretical value same as UCB-GLM
-                    g1 = self.data.sigma*math.sqrt( d*math.log((t*self.data.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
+                    g1 = self.data.sigma*math.sqrt( d/2*math.log(1+2*j*tau/d) + 2*math.log(T)) 
                 if 'alpha2' in paras.keys(): 
                     g2 = selected_paras['alpha2']
                 else:

@@ -40,7 +40,8 @@ sigma = args.sigma
 J = args.js
 J = [float(js) for js in J]
 etas = args.etas
-etas = [float(etas) for eta in etas]
+etas = [float(eta) for eta in etas]
+lamda = 0
 
 paras = {
     'eta0': etas,
@@ -101,7 +102,7 @@ for i in range(rep):
             theta = thetas[i, :]
             context = data_generator.movie
         bandit = context(K, T, d, sigma, true_theta = theta, fv=fv)
-    elif 'glm' in algo:
+    elif 'glm' in algo or 'sgd' in algo:
         if datatype == 'simulations':
             theta = np.random.uniform(lb, ub, d)
             fv = np.random.uniform(-1, 1, (T, K, d))
@@ -113,7 +114,7 @@ for i in range(rep):
             bandit = context_logistic(K, T, d, sigma, true_theta = theta, fv=fv)
     bandit.build_bandit()
     if i==0:
-        theory_explore_rate = sigma*math.sqrt( d*math.log((T*bandit.max_norm**2/lamda+1)/delta) ) + math.sqrt(lamda)
+        theory_explore_rate = g1 = sigma*math.sqrt( d/2*math.log(1+2*T/d) + 2*math.log(T)) 
         print('theoretical exploration rate is {}'.format(theory_explore_rate))
     
     print(i, ": ", end = " ")
