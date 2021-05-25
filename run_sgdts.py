@@ -85,7 +85,7 @@ reg_combined = np.zeros(T)
 methods = {
     'auto': '_auto',
     'op': '_op',
-    'auto_combined': '_combined',
+    'combined': '_combined',
 }
 
 for i in range(rep):
