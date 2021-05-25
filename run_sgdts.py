@@ -23,7 +23,7 @@ parser.add_argument('-data', '--data', type=str, default = 'simulations', help =
 parser.add_argument('-delta', '--delta', type=float, default = 0.1, help = 'error probability')
 parser.add_argument('-sigma', '--sigma', type=float, default = 0.5, help = 'sub gaussian parameter')
 parser.add_argument('-js', '--js', nargs = '+', default = [0,0.01,0.1,1,10], help = 'exploration rates')
-parser.add_argument('-etas', '--etas', nargs = '+', default = [0.01, 0.1, 1, 10], help = 'exploration rates')
+parser.add_argument('-etas', '--etas', nargs = '+', default = [0.01, 0.05, 0.1, 0.5, 1, 5, 10], help = 'exploration rates')
 parser.add_argument('-tau', '--tau', type=int, default = 1, help = 'tau')
 args = parser.parse_args()
 
