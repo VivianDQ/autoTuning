@@ -2,7 +2,6 @@ import numpy as np
 import random
 import math
 from sklearn.linear_model import LogisticRegression
-from algorithms.data_processor.data_generator import reward_model, Gradient
 from algorithms.AutoTuning import *
 import itertools as it
 
