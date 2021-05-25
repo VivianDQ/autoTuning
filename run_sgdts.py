@@ -130,8 +130,9 @@ for i in range(rep):
         k: getattr(algo_class, algo+methods[k]) 
         for k,v in methods.items()
     }
-    reg_op += fcts['op']( tau, {'eta0': paras['eta0']} )
+    
     reg_auto += fcts['auto']( tau, {'eta0': paras['eta0']} )
+    reg_op += fcts['op']( tau, {'eta0': paras['eta0']} )
     reg_syndicated += fcts['auto'](tau, paras)
     reg_combined += fcts['combined'](tau, paras)
     
